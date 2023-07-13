@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <title>Face Recognition</title>
+  </head>
+  <body>
+    <h1>Face Recognition</h1>
+    <video id="video" autoplay></video>
+    <script>
+      const video = document.getElementById("video");
+
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices
+          .getUserMedia({ video: true })
+          .then(function (stream) {
+            video.srcObject = stream;
+          })
+          .catch(function (error) {
+            console.error("Error accessing the camera:", error);
+          });
+      }
+    </script>
+    <p></p>
+    <canvas id="canvas" width="640" height="480" style="display: none"></canvas>
+    <button class="login_button" id="login_button" onclick="Login()">
+      Login
+    </button>
+    <div class="popup" id="login_popup">
+      <div class="overlay"></div>
+      <div class="content">
+        <div class="close-btn" onclick="Login()">&times;</div>
+        <h1>Login</h1>
+        <p>Login</p>
+      </div>
+    </div>
+    <button class="register_button" id="register_button" onclick="Register()">
+      Register New User
+    </button>
+    <div class="popup" id="register_popup">
+      <div class="overlay"></div>
+      <div class="content">
+        <div class="close-btn" onclick="closePopup()">&times;</div>
+        <h1>Register</h1>
+        <input type="text" id="picture_name" placeholder="Enter Picture Name" />
+        <img id="register_image" />
+        <button class="save_button" id="save_button" onclick="savePicture()">
+          Save Picture
+        </button>
+        <button
+          class="try_again_button"
+          id="try_again_button"
+          onclick="tryAgain()"
+        >
+          Try Again
+        </button>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <title>Verification</title>
+  </head>
+  <body>
+    <h1>Verification</h1>
+    <img id="verification_image" src="" alt="Verification Image" />
+    <form action="/verify" method="POST">
+      <label for="picture_name">Enter picture name:</label>
+      <input type="text" id="picture_name" name="picture_name" required />
+      <input type="hidden" id="picture_data" name="picture" />
+      <button type="submit">Verify</button>
+    </form>
+    <script>
+      const verificationImage = document.getElementById("verification_image");
+      const pictureDataInput = document.getElementById("picture_data");
+      const video = document.getElementById("video");
+      const canvas = document.getElementById("canvas");
+      const context = canvas.getContext("2d");
+
+      document.addEventListener("DOMContentLoaded", function () {
+        var verifyButton = document.getElementById("verify_button");
+        verifyButton.addEventListener("click", function () {
+          var canvasWidth = canvas.width;
+          var canvasHeight = canvas.height;
+          context.drawImage(video, 0, 0, canvasWidth, canvasHeight);
+          var dataURL = canvas.toDataURL("image/jpeg");
+          pictureDataInput.value = dataURL;
+          verificationImage.src = dataURL;
+        });
+      });
+    </script>
+  </body>
+</html>
