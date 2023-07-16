@@ -86,7 +86,8 @@ def save_picture():
         picture_name = data.get("name")
 
         if picture_data and picture_name:
-            picture_path = os.path.join("db", f"{picture_name}.jpg")
+            # Save the picture in the /tmp directory
+            picture_path = os.path.join("/tmp", f"{picture_name}.jpg")
             with open(picture_path, "wb") as f:
                 f.write(base64.b64decode(picture_data.split(",")[1]))
             return "Picture saved successfully!", 200
@@ -95,7 +96,7 @@ def save_picture():
     except Exception as e:
         print("Error saving the picture:")
         print(traceback.format_exc())
-        return "Failed to save the picture.", 500
+        return "Failed to save the picture.", 50
 
 @app.route("/compare_picture", methods=["POST"])
 def compare_picture():
