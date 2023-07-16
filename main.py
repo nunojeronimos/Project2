@@ -4,12 +4,15 @@ import base64
 import numpy as np
 
 from flask import Flask, render_template, request, Response, jsonify
+from google.cloud import storage
 
 app = Flask(__name__, static_folder='static')
 
 camera = cv2.VideoCapture(0)
 
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+
+db_folder = "jeronimo"
 
 
 def generate_frames():
@@ -78,7 +81,6 @@ def video_feed():
 
 import traceback
 
-@app.route("/save_picture", methods=["POST"])
 def save_picture():
     try:
         data = request.json
@@ -86,17 +88,27 @@ def save_picture():
         picture_name = data.get("name")
 
         if picture_data and picture_name:
-            # Save the picture in the /tmp directory
-            picture_path = os.path.join("/tmp", f"{picture_name}.jpg")
-            with open(picture_path, "wb") as f:
-                f.write(base64.b64decode(picture_data.split(",")[1]))
+            # Convert the base64 image to NumPy array
+            nparr = np.frombuffer(base64.b64decode(picture_data.split(",")[1]), np.uint8)
+            image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+            # Initialize the Google Cloud Storage client
+            client = storage.Client()
+
+            # Define the path to save the image in the bucket
+            picture_blob = client.bucket(db_folder).blob(f"{picture_name}.jpg")
+
+            # Convert the OpenCV image to bytes and upload it to the bucket
+            ret, buffer = cv2.imencode('.jpg', image)
+            picture_blob.upload_from_string(buffer.tobytes(), content_type='image/jpeg')
+
             return "Picture saved successfully!", 200
         else:
             return "Invalid picture data or picture name received.", 400
     except Exception as e:
         print("Error saving the picture:")
         print(traceback.format_exc())
-        return "Failed to save the picture.", 50
+        return "Failed to save the picture.", 500
 
 @app.route("/compare_picture", methods=["POST"])
 def compare_picture():
@@ -110,7 +122,7 @@ def compare_picture():
             image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
             # Compare the image with the pictures in the database
-            db_folder = "/tmp"
+            db_folder = "db"
             match = False
             name = ""
 
