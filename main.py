@@ -110,7 +110,7 @@ def compare_picture():
             image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
             # Compare the image with the pictures in the database
-            db_folder = "db"
+            db_folder = "/tmp"
             match = False
             name = ""
 
