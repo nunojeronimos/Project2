@@ -5,6 +5,7 @@ import numpy as np
 
 from flask import Flask, render_template, request, Response, jsonify
 from google.cloud import storage
+from google.auth import compute_engine
 
 app = Flask(__name__, static_folder='static')
 
@@ -120,7 +121,7 @@ def compare_picture():
 
             # Compare the image with the pictures in Google Cloud Storage
             bucket_name = "your-bucket-name"  # Replace with your actual bucket name
-            client = storage.Client()
+            client = storage.Client(credentials=compute_engine.Credentials())
             bucket = client.bucket(bucket_name)
 
             match = False
