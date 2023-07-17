@@ -4,6 +4,7 @@ import base64
 import numpy as np
 
 from flask import Flask, render_template, request, Response, jsonify
+from google.cloud import storage
 
 app = Flask(__name__, static_folder='static')
 
@@ -11,6 +12,7 @@ camera = cv2.VideoCapture(0)
 
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
+_BUCKET_NAME = 'jeronimo2'
 
 def generate_frames():
     cap = cv2.VideoCapture(0)  # Change the argument to the camera index if necessary
@@ -86,10 +88,18 @@ def save_picture():
         picture_name = data.get("name")
 
         if picture_data and picture_name:
-            picture_path = os.path.join("db", f"{picture_name}.jpg")
-            with open(picture_path, "wb") as f:
-                f.write(base64.b64decode(picture_data.split(",")[1]))
+            # Create a client to interact with Google Cloud Storage
+            gcs_client = storage.Client()
+
+            # Get the "jeronimo" bucket (replace "jeronimo" with your actual bucket name)
+            storage_bucket = gcs_client.get_bucket(_BUCKET_NAME)
+
+            # Upload the image to the bucket
+            blob = storage_bucket.blob(f"{picture_name}.jpg")
+            blob.upload_from_base64(picture_data)
+
             return "Picture saved successfully!", 200
+        
         else:
             return "Invalid picture data or picture name received.", 400
     except Exception as e:
