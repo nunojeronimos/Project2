@@ -2,6 +2,7 @@ import cv2
 import os
 import base64
 import numpy as np
+import io
 
 from flask import Flask, render_template, request, Response, jsonify
 from google.cloud import storage
@@ -80,7 +81,6 @@ def video_feed():
 
 import traceback
 
-@app.route("/save_picture", methods=["POST"])
 def save_picture():
     try:
         data = request.json
@@ -89,17 +89,22 @@ def save_picture():
 
         if picture_data and picture_name:
             # Create a client to interact with Google Cloud Storage
-            gcs_client = storage.Client()
+            client = storage.Client()
 
             # Get the "jeronimo" bucket (replace "jeronimo" with your actual bucket name)
-            storage_bucket = gcs_client.get_bucket(_BUCKET_NAME)
+            bucket = client.bucket("jeronimo")
+
+            # Convert the base64 image to bytes
+            image_bytes = base64.b64decode(picture_data.split(",")[1])
 
             # Upload the image to the bucket
-            blob = storage_bucket.blob(f"{picture_name}.jpg")
-            blob.upload_from_base64(picture_data)
+            blob = bucket.blob(f"{picture_name}.jpg")
+            blob.upload_from_file(
+                io.BytesIO(image_bytes),
+                content_type="image/jpeg"
+            )
 
             return "Picture saved successfully!", 200
-        
         else:
             return "Invalid picture data or picture name received.", 400
     except Exception as e:
