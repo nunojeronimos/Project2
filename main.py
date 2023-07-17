@@ -4,7 +4,6 @@ import base64
 import numpy as np
 
 from flask import Flask, render_template, request, Response, jsonify
-from google.cloud import storage
 
 app = Flask(__name__, static_folder='static')
 
@@ -12,7 +11,6 @@ camera = cv2.VideoCapture(0)
 
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
-_BUCKET_NAME = 'jeronimo2'
 
 def generate_frames():
     cap = cv2.VideoCapture(0)  # Change the argument to the camera index if necessary
@@ -51,7 +49,7 @@ def compare_faces(image1, image2):
                 return True
 
     return False
-"""  
+        
 @app.route("/try_again", methods=["POST"])
 def try_again():
     try:
@@ -69,7 +67,7 @@ def try_again():
         print("Error saving the new picture:")
         print(traceback.format_exc())
         return "Failed to save the new picture.", 500
-"""
+
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -88,14 +86,9 @@ def save_picture():
         picture_name = data.get("name")
 
         if picture_data and picture_name:
-            # Convert the base64 image to bytes
-            image_bytes = base64.b64decode(picture_data.split(",")[1])
-
-            # Save the image to the "db" folder
             picture_path = os.path.join("db", f"{picture_name}.jpg")
             with open(picture_path, "wb") as f:
-                f.write(image_bytes)
-
+                f.write(base64.b64decode(picture_data.split(",")[1]))
             return "Picture saved successfully!", 200
         else:
             return "Invalid picture data or picture name received.", 400
