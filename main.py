@@ -2,7 +2,6 @@ import cv2
 import os
 import base64
 import numpy as np
-import io
 
 from flask import Flask, render_template, request, Response, jsonify
 from google.cloud import storage
@@ -52,7 +51,7 @@ def compare_faces(image1, image2):
                 return True
 
     return False
-        
+"""  
 @app.route("/try_again", methods=["POST"])
 def try_again():
     try:
@@ -70,7 +69,7 @@ def try_again():
         print("Error saving the new picture:")
         print(traceback.format_exc())
         return "Failed to save the new picture.", 500
-
+"""
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -81,6 +80,7 @@ def video_feed():
 
 import traceback
 
+@app.route("/save_picture", methods=["POST"])
 def save_picture():
     try:
         data = request.json
@@ -88,21 +88,13 @@ def save_picture():
         picture_name = data.get("name")
 
         if picture_data and picture_name:
-            # Create a client to interact with Google Cloud Storage
-            client = storage.Client()
-
-            # Get the "jeronimo" bucket (replace "jeronimo" with your actual bucket name)
-            bucket = client.bucket("jeronimo")
-
             # Convert the base64 image to bytes
             image_bytes = base64.b64decode(picture_data.split(",")[1])
 
-            # Upload the image to the bucket
-            blob = bucket.blob(f"{picture_name}.jpg")
-            blob.upload_from_file(
-                io.BytesIO(image_bytes),
-                content_type="image/jpeg"
-            )
+            # Save the image to the "db" folder
+            picture_path = os.path.join("db", f"{picture_name}.jpg")
+            with open(picture_path, "wb") as f:
+                f.write(image_bytes)
 
             return "Picture saved successfully!", 200
         else:
