@@ -4,6 +4,7 @@ import base64
 import numpy as np
 
 from flask import Flask, render_template, request, Response, jsonify
+from google.cloud import storage
 
 app = Flask(__name__, static_folder='static')
 
@@ -86,9 +87,18 @@ def save_picture():
         picture_name = data.get("name")
 
         if picture_data and picture_name:
-            picture_path = os.path.join("db", f"{picture_name}.jpg")
-            with open(picture_path, "wb") as f:
-                f.write(base64.b64decode(picture_data.split(",")[1]))
+            # Convert the base64 image to NumPy array
+            nparr = np.frombuffer(base64.b64decode(picture_data.split(",")[1]), np.uint8)
+            image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+            # Save the picture to Google Cloud Storage
+            bucket_name = "jeronimo2"  # Replace with your actual bucket name
+            client = storage.Client()
+            bucket = client.bucket(bucket_name)
+
+            blob = bucket.blob(f"{picture_name}.jpg")
+            blob.upload_from_string(picture_data, content_type="image/jpeg")
+
             return "Picture saved successfully!", 200
         else:
             return "Invalid picture data or picture name received.", 400
