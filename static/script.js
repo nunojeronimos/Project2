@@ -105,13 +105,18 @@ function Login() {
   var context = canvas.getContext("2d");
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-  var dataURL = canvas.toDataURL("image/jpeg");
+  var picturePreview = document.getElementById("register_image");
+  picturePreview.src = canvas.toDataURL("image/jpeg");
+
+  // Convert the data URL to a base64-encoded string
+  var dataURL = picturePreview.src;
 
   fetch("/compare_picture", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
+    // Send the image data as base64-encoded string
     body: JSON.stringify({ picture: dataURL }),
   })
     .then(function (response) {
