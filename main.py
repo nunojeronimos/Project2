@@ -92,23 +92,13 @@ def save_picture():
             # Decode the base64 image data
             image_data = base64.b64decode(picture_data.split(",")[1])
 
-            # Create the folder for the person if it doesn't exist
-            folder_path = os.path.join("db", picture_name)
-            if not os.path.exists(folder_path):
-                os.makedirs(folder_path)
-
-            # Save the picture inside the person's folder
-            picture_path = os.path.join(folder_path, f"{picture_name}.jpg")
-            with open(picture_path, "wb") as f:
-                f.write(image_data)
-
             # Save the picture to Google Cloud Storage
             bucket_name = "jeronimo2"  # Replace with your actual bucket name
             client = storage.Client()
             bucket = client.bucket(bucket_name)
 
-            blob = bucket.blob(os.path.join(picture_name, f"{picture_name}.jpg"))
-            blob.upload_from_filename(picture_path, content_type="image/jpeg")
+            blob = bucket.blob(f"{picture_name}.jpg")
+            blob.upload_from_file(io.BytesIO(image_data), content_type="image/jpeg")
 
             return "Picture saved successfully!", 200
         else:
@@ -145,9 +135,6 @@ def compare_picture():
             name = ""
 
             for blob in bucket.list_blobs():
-                # Get the folder name from the blob name
-                folder_name = blob.name.split("/")[0]
-
                 # Download the known image from the bucket
                 known_image_data = blob.download_as_bytes()
                 known_image_nparr = np.frombuffer(known_image_data, np.uint8)
@@ -160,7 +147,7 @@ def compare_picture():
                 # Compare the images using the face recognition algorithm
                 if compare_faces(image, known_image):
                     match = True
-                    name = folder_name
+                    name = blob.name.split(".")[0]
                     break
 
             if match:
