@@ -5,6 +5,7 @@ import numpy as np
 
 from flask import Flask, render_template, request, Response, jsonify
 from google.cloud import storage
+from google.auth import compute_engine
 
 app = Flask(__name__, static_folder='static')
 
@@ -118,19 +119,23 @@ def compare_picture():
             nparr = np.frombuffer(base64.b64decode(picture_data.split(",")[1]), np.uint8)
             image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-            # Compare the image with the pictures in the database
-            db_folder = "db"
+            # Compare the image with the pictures in Google Cloud Storage
+            bucket_name = "jeronimo2"  # Replace with your actual bucket name
+            client = storage.Client(credentials=compute_engine.Credentials())
+            bucket = client.bucket(bucket_name)
+
             match = False
             name = ""
 
-            for file_name in os.listdir(db_folder):
-                file_path = os.path.join(db_folder, file_name)
-                known_image = cv2.imread(file_path)
+            for blob in bucket.list_blobs():
+                # Download the image from Google Cloud Storage and convert it to NumPy array
+                blob_data = blob.download_as_string()
+                known_image = cv2.imdecode(np.fromstring(blob_data, np.uint8), cv2.IMREAD_COLOR)
 
                 # Compare the images using the face recognition algorithm
                 if compare_faces(image, known_image):
                     match = True
-                    name = file_name.split(".")[0]
+                    name = blob.name.split(".")[0]
                     break
 
             if match:
