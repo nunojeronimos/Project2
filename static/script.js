@@ -1,24 +1,12 @@
-/*document.addEventListener("DOMContentLoaded", function () {
-  var button = document.getElementById("login_button");
-  button.addEventListener("click", function () {
-    alert("Login");
-  });
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-  var button = document.getElementById("register_button");
-  button.addEventListener("click", function () {
-    alert("Register");
-  });
-});
-*/
-
 document.addEventListener("DOMContentLoaded", function () {
   var loginButton = document.getElementById("login_button");
   loginButton.addEventListener("click", Login);
 
   var registerButton = document.getElementById("register_button");
   registerButton.addEventListener("click", openRegisterPopup);
+
+  var tryAgainButton = document.getElementById("try_again_button");
+  tryAgainButton.addEventListener("click", tryAgain);
 
   var closeButtons = document.getElementsByClassName("close-btn");
   for (var i = 0; i < closeButtons.length; i++) {
@@ -95,10 +83,6 @@ function tryAgain() {
   var picturePreview = document.getElementById("register_image");
   picturePreview.src = canvas.toDataURL("image/jpeg");
 }
-
-// Add event listener for "Try Again" button
-var tryAgainButton = document.getElementById("try_again_button");
-tryAgainButton.addEventListener("click", tryAgain);
 
 function Login() {
   var canvas = document.getElementById("canvas");
