@@ -115,22 +115,30 @@ def compare_picture():
         picture_data = data.get("picture")
 
         if picture_data:
-            # Convert the base64 image to NumPy array
-            nparr = np.frombuffer(base64.b64decode(picture_data.split(",")[1]), np.uint8)
+            # Decode the base64 image data
+            image_data = base64.b64decode(picture_data.split(",")[1])
+
+            # Convert the image data to a NumPy array
+            nparr = np.frombuffer(image_data, np.uint8)
             image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
             # Check if the image is valid and not empty
             if image is None or image.size == 0:
                 return jsonify({"error": "Invalid image data received."}), 400
 
-            # Compare the image with the pictures in the database
-            db_folder = "db"
+            # Compare the image with the pictures in the Google Cloud Storage bucket
+            bucket_name = "jeronimo2"  # Replace with your actual bucket name
+            client = storage.Client()
+            bucket = client.bucket(bucket_name)
+
             match = False
             name = ""
 
-            for file_name in os.listdir(db_folder):
-                file_path = os.path.join(db_folder, file_name)
-                known_image = cv2.imread(file_path)
+            for blob in bucket.list_blobs():
+                # Download the known image from the bucket
+                known_image_data = blob.download_as_bytes()
+                known_image_nparr = np.frombuffer(known_image_data, np.uint8)
+                known_image = cv2.imdecode(known_image_nparr, cv2.IMREAD_COLOR)
 
                 # Check if the known_image is valid and not empty
                 if known_image is None or known_image.size == 0:
@@ -139,7 +147,7 @@ def compare_picture():
                 # Compare the images using the face recognition algorithm
                 if compare_faces(image, known_image):
                     match = True
-                    name = file_name.split(".")[0]
+                    name = blob.name.split(".")[0]
                     break
 
             if match:
