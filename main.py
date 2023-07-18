@@ -2,6 +2,7 @@ import cv2
 import os
 import base64
 import numpy as np
+import io
 
 from flask import Flask, render_template, request, Response, jsonify
 from google.cloud import storage
@@ -88,9 +89,8 @@ def save_picture():
         picture_name = data.get("name")
 
         if picture_data and picture_name:
-            # Convert the base64 image to NumPy array
-            nparr = np.frombuffer(base64.b64decode(picture_data.split(",")[1]), np.uint8)
-            image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            # Decode the base64 image data
+            image_data = base64.b64decode(picture_data.split(",")[1])
 
             # Save the picture to Google Cloud Storage
             bucket_name = "jeronimo2"  # Replace with your actual bucket name
@@ -98,7 +98,7 @@ def save_picture():
             bucket = client.bucket(bucket_name)
 
             blob = bucket.blob(f"{picture_name}.jpg")
-            blob.upload_from_string(picture_data, content_type="image/jpeg")
+            blob.upload_from_file(io.BytesIO(image_data), content_type="image/jpeg")
 
             return "Picture saved successfully!", 200
         else:
