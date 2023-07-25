@@ -1,9 +1,3 @@
-// Load the pre-trained Haar Cascade classifier for face detection
-const faceCascade = new cv.CascadeClassifier();
-const faceCascadeFile = "haarcascade_frontalface_default.xml";
-
-faceCascade.load(faceCascadeFile);
-
 document.addEventListener("DOMContentLoaded", function () {
   var loginButton = document.getElementById("login_button");
   loginButton.addEventListener("click", Login);
@@ -34,34 +28,10 @@ function Register() {
   var context = canvas.getContext("2d");
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-  // Convert the canvas image to OpenCV image format
-  var cvImage = new cv.Mat(canvas.height, canvas.width, cv.CV_8UC4);
-  cv.imshow(canvas, cvImage);
+  var picturePreview = document.getElementById("register_image");
+  picturePreview.src = canvas.toDataURL("image/jpeg");
 
-  // Convert the OpenCV image to grayscale for face detection
-  var grayImage = new cv.Mat();
-  cv.cvtColor(cvImage, grayImage, cv.COLOR_RGBA2GRAY);
-
-  // Detect faces using the face_recognition library
-  faceapi.detectAllFaces(grayImage.toDataURL()).then((detectedFaces) => {
-    // Release memory occupied by the OpenCV images
-    cvImage.delete();
-    grayImage.delete();
-
-    // Set the minimum number of required faces detected to proceed
-    var minRequiredFaces = 1;
-
-    // Check if the required number of faces were detected
-    if (detectedFaces.length < minRequiredFaces) {
-      alert("No face detected. Please try again.");
-      return;
-    }
-
-    var picturePreview = document.getElementById("register_image");
-    picturePreview.src = canvas.toDataURL("image/jpeg");
-
-    document.getElementById("register_popup").classList.add("active");
-  });
+  document.getElementById("register_popup").classList.add("active");
 }
 
 function savePicture() {
@@ -69,43 +39,12 @@ function savePicture() {
   var context = canvas.getContext("2d");
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-  // Perform face detection on the canvas image
-  var cvImage = cv.imread(canvas);
-  var grayImage = new cv.Mat();
-  cv.cvtColor(cvImage, grayImage, cv.COLOR_RGBA2GRAY);
-  var detectedFaces = new cv.RectVector();
-  faceCascade.detectMultiScale(
-    grayImage,
-    detectedFaces,
-    1.1,
-    5,
-    0,
-    new cv.Size(30, 30)
-  );
-
-  if (detectedFaces.size() === 0) {
-    alert("No face detected. Please try again.");
-    cvImage.delete();
-    grayImage.delete();
-    detectedFaces.delete();
-    return;
-  }
-
-  // Convert the OpenCV image to a data URL for preview
   var picturePreview = document.getElementById("register_image");
-  var tempCanvas = document.createElement("canvas");
-  cv.imshow(tempCanvas, cvImage);
-  picturePreview.src = tempCanvas.toDataURL("image/jpeg");
+  picturePreview.src = canvas.toDataURL("image/jpeg");
 
-  // Convert the OpenCV image to a base64-encoded string for saving
-  var cvImageData = tempCanvas.toDataURL("image/jpeg").split(",")[1];
+  // Convert the data URL to a base64-encoded string
+  var dataURL = picturePreview.src;
 
-  // Release memory occupied by the OpenCV images and detectedFaces
-  cvImage.delete();
-  grayImage.delete();
-  detectedFaces.delete();
-
-  // Continue with the picture saving process
   var pictureName = document.getElementById("picture_name").value.trim();
 
   if (!pictureName) {
@@ -113,24 +52,52 @@ function savePicture() {
     return;
   }
 
-  fetch("/save_picture", {
+  // Check if the image contains a face before saving
+  fetch("/compare_picture", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     // Send the image data as base64-encoded string
-    body: JSON.stringify({ picture: cvImageData, name: pictureName }),
+    body: JSON.stringify({ picture: dataURL }),
   })
     .then(function (response) {
       if (response.ok) {
-        alert("Picture saved successfully!");
-        closePopup();
+        return response.json();
       } else {
-        alert("Failed to save the picture.");
+        throw new Error("Failed to compare the picture.");
+      }
+    })
+    .then(function (data) {
+      if (data.match) {
+        // Face detected, proceed with saving the picture
+        fetch("/save_picture", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          // Send the image data as base64-encoded string
+          body: JSON.stringify({ picture: dataURL, name: pictureName }),
+        })
+          .then(function (response) {
+            if (response.ok) {
+              alert("Picture saved successfully!");
+              closePopup();
+            } else {
+              alert("Failed to save the picture.");
+            }
+          })
+          .catch(function (error) {
+            alert("An error occurred while saving the picture.");
+            console.error("Error:", error);
+          });
+      } else {
+        // No face detected, inform the user
+        alert("No face detected. Please try again.");
       }
     })
     .catch(function (error) {
-      alert("An error occurred while saving the picture.");
+      alert("An error occurred while comparing the picture.");
       console.error("Error:", error);
     });
 }
