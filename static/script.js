@@ -69,19 +69,6 @@ function savePicture() {
   var context = canvas.getContext("2d");
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-  var picturePreview = document.getElementById("register_image");
-  picturePreview.src = canvas.toDataURL("image/jpeg");
-
-  // Convert the data URL to a base64-encoded string
-  var dataURL = picturePreview.src;
-
-  var pictureName = document.getElementById("picture_name").value.trim();
-
-  if (!pictureName) {
-    alert("Please enter a picture name.");
-    return;
-  }
-
   // Perform face detection on the canvas image
   var cvImage = cv.imread(canvas);
   var grayImage = new cv.Mat();
@@ -105,6 +92,7 @@ function savePicture() {
   }
 
   // Convert the OpenCV image to a data URL for preview
+  var picturePreview = document.getElementById("register_image");
   var tempCanvas = document.createElement("canvas");
   cv.imshow(tempCanvas, cvImage);
   picturePreview.src = tempCanvas.toDataURL("image/jpeg");
@@ -116,6 +104,14 @@ function savePicture() {
   cvImage.delete();
   grayImage.delete();
   detectedFaces.delete();
+
+  // Continue with the picture saving process
+  var pictureName = document.getElementById("picture_name").value.trim();
+
+  if (!pictureName) {
+    alert("Please enter a picture name.");
+    return;
+  }
 
   fetch("/save_picture", {
     method: "POST",
