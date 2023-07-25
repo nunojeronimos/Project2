@@ -50,8 +50,11 @@ function Register() {
   cvImage.delete();
   grayImage.delete();
 
-  // Check if any faces were detected
-  if (faces.size() === 0) {
+  // Set the minimum number of required faces detected to proceed
+  var minRequiredFaces = 1;
+
+  // Check if the required number of faces were detected
+  if (faces.size() < minRequiredFaces) {
     alert("No face detected. Please try again.");
     return;
   }
