@@ -42,27 +42,26 @@ function Register() {
   var grayImage = new cv.Mat();
   cv.cvtColor(cvImage, grayImage, cv.COLOR_RGBA2GRAY);
 
-  // Detect faces in the grayscale image using Haar Cascade classifier
-  var faces = new cv.RectVector();
-  faceCascade.detectMultiScale(grayImage, faces);
+  // Detect faces using the face_recognition library
+  faceapi.detectAllFaces(grayImage.toDataURL()).then((detectedFaces) => {
+    // Release memory occupied by the OpenCV images
+    cvImage.delete();
+    grayImage.delete();
 
-  // Release memory occupied by the OpenCV images
-  cvImage.delete();
-  grayImage.delete();
+    // Set the minimum number of required faces detected to proceed
+    var minRequiredFaces = 1;
 
-  // Set the minimum number of required faces detected to proceed
-  var minRequiredFaces = 1;
+    // Check if the required number of faces were detected
+    if (detectedFaces.length < minRequiredFaces) {
+      alert("No face detected. Please try again.");
+      return;
+    }
 
-  // Check if the required number of faces were detected
-  if (faces.size() < minRequiredFaces) {
-    alert("No face detected. Please try again.");
-    return;
-  }
+    var picturePreview = document.getElementById("register_image");
+    picturePreview.src = canvas.toDataURL("image/jpeg");
 
-  var picturePreview = document.getElementById("register_image");
-  picturePreview.src = canvas.toDataURL("image/jpeg");
-
-  document.getElementById("register_popup").classList.add("active");
+    document.getElementById("register_popup").classList.add("active");
+  });
 }
 
 function savePicture() {
