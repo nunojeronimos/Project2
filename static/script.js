@@ -69,7 +69,10 @@ function savePicture() {
       }
     })
     .then(function (data) {
-      if (data.match) {
+      if (data.error) {
+        // Error occurred during face comparison, inform the user
+        alert(data.error);
+      } else if (data.match) {
         // Face detected, proceed with saving the picture
         fetch("/save_picture", {
           method: "POST",
