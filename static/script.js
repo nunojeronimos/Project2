@@ -1,3 +1,9 @@
+// Load the pre-trained Haar Cascade classifier for face detection
+const faceCascade = new cv.CascadeClassifier();
+const faceCascadeFile = "haarcascade_frontalface_default.xml";
+
+faceCascade.load(faceCascadeFile);
+
 document.addEventListener("DOMContentLoaded", function () {
   var loginButton = document.getElementById("login_button");
   loginButton.addEventListener("click", Login);
@@ -27,6 +33,28 @@ function Register() {
   var canvas = document.getElementById("canvas");
   var context = canvas.getContext("2d");
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  // Convert the canvas image to OpenCV image format
+  var cvImage = new cv.Mat(canvas.height, canvas.width, cv.CV_8UC4);
+  cv.imshow(canvas, cvImage);
+
+  // Convert the OpenCV image to grayscale for face detection
+  var grayImage = new cv.Mat();
+  cv.cvtColor(cvImage, grayImage, cv.COLOR_RGBA2GRAY);
+
+  // Detect faces in the grayscale image using Haar Cascade classifier
+  var faces = new cv.RectVector();
+  faceCascade.detectMultiScale(grayImage, faces);
+
+  // Release memory occupied by the OpenCV images
+  cvImage.delete();
+  grayImage.delete();
+
+  // Check if any faces were detected
+  if (faces.size() === 0) {
+    alert("No face detected. Please try again.");
+    return;
+  }
 
   var picturePreview = document.getElementById("register_image");
   picturePreview.src = canvas.toDataURL("image/jpeg");
