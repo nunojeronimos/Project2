@@ -82,13 +82,48 @@ function savePicture() {
     return;
   }
 
+  // Perform face detection on the canvas image
+  var cvImage = cv.imread(canvas);
+  var grayImage = new cv.Mat();
+  cv.cvtColor(cvImage, grayImage, cv.COLOR_RGBA2GRAY);
+  var detectedFaces = new cv.RectVector();
+  faceCascade.detectMultiScale(
+    grayImage,
+    detectedFaces,
+    1.1,
+    5,
+    0,
+    new cv.Size(30, 30)
+  );
+
+  if (detectedFaces.size() === 0) {
+    alert("No face detected. Please try again.");
+    cvImage.delete();
+    grayImage.delete();
+    detectedFaces.delete();
+    return;
+  }
+
+  // Convert the OpenCV image to a data URL for preview
+  var tempCanvas = document.createElement("canvas");
+  cv.imshow(tempCanvas, cvImage);
+  picturePreview.src = tempCanvas.toDataURL("image/jpeg");
+
+  // Convert the OpenCV image to a base64-encoded string for saving
+  var cvImageData = tempCanvas.toDataURL("image/jpeg").split(",")[1];
+
+  // Release memory occupied by the OpenCV images and detectedFaces
+  cvImage.delete();
+  grayImage.delete();
+  detectedFaces.delete();
+
   fetch("/save_picture", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     // Send the image data as base64-encoded string
-    body: JSON.stringify({ picture: dataURL, name: pictureName }),
+    body: JSON.stringify({ picture: cvImageData, name: pictureName }),
   })
     .then(function (response) {
       if (response.ok) {
