@@ -8,6 +8,9 @@ document.addEventListener("DOMContentLoaded", function () {
   var tryAgainButton = document.getElementById("try_again_button");
   tryAgainButton.addEventListener("click", tryAgain);
 
+  var saveButton = document.getElementById("save_button");
+  saveButton.addEventListener("click", savePicture); // Call savePicture function when the Save Picture button is clicked
+
   var closeButtons = document.getElementsByClassName("close-btn");
   for (var i = 0; i < closeButtons.length; i++) {
     closeButtons[i].addEventListener("click", closePopup);
@@ -35,6 +38,9 @@ function Register() {
 }
 
 function savePicture() {
+  // Call Register function to capture the image from the video stream
+  Register();
+
   var canvas = document.getElementById("canvas");
   var context = canvas.getContext("2d");
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
