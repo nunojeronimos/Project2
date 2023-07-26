@@ -64,7 +64,13 @@ function savePicture() {
       if (response.ok) {
         alert("Picture saved successfully!");
         closePopup();
+      } else if (response.status === 400) {
+        // No face detected, inform the user
+        return response.json().then(function (data) {
+          alert(data.error);
+        });
       } else {
+        // Other error occurred, inform the user
         alert("Failed to save the picture.");
       }
     })
