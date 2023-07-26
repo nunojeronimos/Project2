@@ -102,10 +102,10 @@ def save_picture():
 
             # Perform face detection on the image
             faces = face_cascade.detectMultiScale(image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-
+            print(len(faces))
             if len(faces) == 0:
                 # No face detected, do not save the picture
-                return jsonify({"error": "No face detected. Picture not saved."}), 400
+                return jsonify({"error": "No face detected. Please try again."}), 400
 
             # Save the picture to Google Cloud Storage
             bucket_name = "jeronimo2"  # Replace with your actual bucket name
@@ -122,6 +122,7 @@ def save_picture():
         print("Error saving the picture:")
         print(traceback.format_exc())
         return "Failed to save the picture.", 500
+
 
 
 @app.route("/compare_picture", methods=["POST"])
