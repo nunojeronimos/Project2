@@ -38,9 +38,6 @@ function Register() {
 }
 
 function savePicture() {
-  // Call Register function to capture the image from the video stream
-  Register();
-
   var canvas = document.getElementById("canvas");
   var context = canvas.getContext("2d");
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
