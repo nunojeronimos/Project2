@@ -66,7 +66,11 @@ function savePicture() {
         closePopup();
       } else {
         return response.json().then(function (data) {
-          alert(data.error);
+          if (data.error) {
+            alert(data.error); // Handle specific error response
+          } else {
+            alert("Failed to save the picture.");
+          }
         });
       }
     })
