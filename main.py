@@ -98,13 +98,14 @@ def save_picture():
 
             # Check if the image is valid and not empty
             if image is None or image.size == 0:
+                print("Invalid image data received.")
                 return jsonify({"error": "Invalid image data received."}), 400
 
             # Perform face detection on the image
             faces = face_cascade.detectMultiScale(image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-            print(len(faces))
+            print("Number of faces detected:", len(faces))
             if len(faces) == 0:
-                # No face detected, do not save the picture
+                print("No face detected. Please try again.")
                 return jsonify({"error": "No face detected. Please try again."}), 400
 
             # Save the picture to Google Cloud Storage
@@ -117,11 +118,13 @@ def save_picture():
 
             return "Picture saved successfully!", 200
         else:
+            print("Invalid picture data or picture name received.")
             return "Invalid picture data or picture name received.", 400
     except Exception as e:
         print("Error saving the picture:")
         print(traceback.format_exc())
         return "Failed to save the picture.", 500
+
 
 
 
