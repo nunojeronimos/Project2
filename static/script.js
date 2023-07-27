@@ -1,6 +1,3 @@
-// Global variable to store the registration image data
-let registrationImageData;
-
 document.addEventListener("DOMContentLoaded", function () {
   var loginButton = document.getElementById("login_button");
   loginButton.addEventListener("click", Login);
@@ -37,18 +34,15 @@ function Register() {
   var picturePreview = document.getElementById("register_image");
   picturePreview.src = canvas.toDataURL("image/jpeg");
 
-  // Store the registration image data in the global variable
-  registrationImageData = picturePreview.src;
-
   document.getElementById("register_popup").classList.add("active");
 }
 
 async function savePicture() {
-  // Check if there is a registration image data to save
-  if (!registrationImageData) {
-    alert("No registration image data found. Please register first.");
-    return;
-  }
+  var picturePreview = document.getElementById("register_image");
+  picturePreview.src = canvas.toDataURL("image/jpeg");
+
+  // Convert the data URL to a base64-encoded string
+  var dataURL = picturePreview.src;
 
   try {
     const response = await fetch("/compare_picture", {
@@ -56,8 +50,8 @@ async function savePicture() {
       headers: {
         "Content-Type": "application/json",
       },
-      // Send the registration image data as base64-encoded string
-      body: JSON.stringify({ picture: registrationImageData }),
+      // Send the image data as base64-encoded string
+      body: JSON.stringify({ picture: dataURL }),
     });
 
     if (response.ok) {
@@ -77,10 +71,7 @@ async function savePicture() {
             "Content-Type": "application/json",
           },
           // Send the image data as base64-encoded string
-          body: JSON.stringify({
-            picture: registrationImageData,
-            name: pictureName,
-          }),
+          body: JSON.stringify({ picture: dataURL, name: pictureName }),
         });
 
         if (saveResponse.ok) {
