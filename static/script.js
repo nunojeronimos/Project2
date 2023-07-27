@@ -38,11 +38,9 @@ function Register() {
 }
 
 async function savePicture() {
+  var canvas = document.getElementById("canvas");
   var picturePreview = document.getElementById("register_image");
-  picturePreview.src = canvas.toDataURL("image/jpeg");
-
-  // Convert the data URL to a base64-encoded string
-  var dataURL = picturePreview.src;
+  var dataURL = canvas.toDataURL("image/jpeg");
 
   try {
     const response = await fetch("/compare_picture", {
