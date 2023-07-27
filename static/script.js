@@ -1,11 +1,9 @@
-let capturedImage;
-
 document.addEventListener("DOMContentLoaded", function () {
   var loginButton = document.getElementById("login_button");
   loginButton.addEventListener("click", Login);
 
   var registerButton = document.getElementById("register_button");
-  registerButton.addEventListener("click", register);
+  registerButton.addEventListener("click", openRegisterPopup);
 
   var tryAgainButton = document.getElementById("try_again_button");
   tryAgainButton.addEventListener("click", tryAgain);
@@ -27,28 +25,28 @@ function closePopup() {
   document.getElementById("register_popup").classList.remove("active");
 }
 
-function register() {
+function Register() {
   var video = document.getElementById("video");
   var canvas = document.getElementById("canvas");
   var context = canvas.getContext("2d");
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-  // Store the captured image in the global variable
-  capturedImage = canvas.toDataURL("image/jpeg");
-
   var picturePreview = document.getElementById("register_image");
-  picturePreview.src = capturedImage;
+  picturePreview.src = canvas.toDataURL("image/jpeg");
 
   document.getElementById("register_popup").classList.add("active");
 }
 
 async function savePicture() {
-  if (!capturedImage) {
-    alert("Please capture an image first.");
-    return;
-  }
+  var canvas = document.getElementById("canvas");
+  var context = canvas.getContext("2d");
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-  var dataURL = capturedImage;
+  var picturePreview = document.getElementById("register_image");
+  var dataURL = canvas.toDataURL("image/jpeg"); // Capture the image data once
+
+  picturePreview.src = dataURL; // Set the preview with the captured image
+
   try {
     const response = await fetch("/compare_picture", {
       method: "POST",
