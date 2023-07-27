@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
   loginButton.addEventListener("click", Login);
 
   var registerButton = document.getElementById("register_button");
-  registerButton.addEventListener("click", openRegisterPopup);
+  registerButton.addEventListener("click", captureImage);
 
   var tryAgainButton = document.getElementById("try_again_button");
   tryAgainButton.addEventListener("click", tryAgain);
@@ -33,15 +33,23 @@ function Register() {
 
   var picturePreview = document.getElementById("register_image");
   picturePreview.src = canvas.toDataURL("image/jpeg");
+}
+
+// Function to capture and display the registration image
+function captureImage() {
+  var video = document.getElementById("video");
+  var canvas = document.getElementById("canvas");
+  var context = canvas.getContext("2d");
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  var picturePreview = document.getElementById("register_image");
+  picturePreview.src = canvas.toDataURL("image/jpeg");
 
   document.getElementById("register_popup").classList.add("active");
 }
 
 async function savePicture() {
   var picturePreview = document.getElementById("register_image");
-  picturePreview.src = canvas.toDataURL("image/jpeg");
-
-  // Convert the data URL to a base64-encoded string
   var dataURL = picturePreview.src;
 
   try {
