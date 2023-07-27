@@ -43,20 +43,12 @@ async function savePicture() {
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
   var picturePreview = document.getElementById("register_image");
-  var dataURL = canvas.toDataURL("image/jpeg"); // Capture the image data once
+  picturePreview.src = canvas.toDataURL("image/jpeg");
 
-  picturePreview.src = dataURL; // Set the preview with the captured image
+  // Convert the data URL to a base64-encoded string
+  var dataURL = picturePreview.src;
 
   try {
-    const response = await fetch("/compare_picture", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      // Send the image data as base64-encoded string
-      body: JSON.stringify({ picture: dataURL }),
-    });
-
     if (response.ok) {
       const data = await response.json();
       if (data.match) {
