@@ -15,6 +15,14 @@ document.addEventListener("DOMContentLoaded", function () {
   for (var i = 0; i < closeButtons.length; i++) {
     closeButtons[i].addEventListener("click", closePopup);
   }
+
+  var picturePreview = document.getElementById("register_image");
+  function setPicturePreviewFromCanvas() {
+    var canvas = document.getElementById("canvas");
+    var context = canvas.getContext("2d");
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    picturePreview.src = canvas.toDataURL("image/jpeg");
+  }
 });
 
 function openRegisterPopup() {
@@ -38,13 +46,6 @@ function Register() {
 }
 
 async function savePicture() {
-  var canvas = document.getElementById("canvas");
-  var context = canvas.getContext("2d");
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-  var picturePreview = document.getElementById("register_image");
-  picturePreview.src = canvas.toDataURL("image/jpeg");
-
   // Convert the data URL to a base64-encoded string
   var dataURL = picturePreview.src;
 
@@ -101,6 +102,16 @@ async function savePicture() {
     console.error("Error:", error);
   }
 }
+
+var tryAgainButton = document.getElementById("try_again_button");
+tryAgainButton.addEventListener("click", setPicturePreviewFromCanvas);
+
+var registerButton = document.getElementById("register_button");
+registerButton.addEventListener("click", function () {
+  // Call setPicturePreviewFromCanvas() before opening the registration popup
+  setPicturePreviewFromCanvas();
+  openRegisterPopup();
+});
 
 function tryAgain() {
   var video = document.getElementById("video");
