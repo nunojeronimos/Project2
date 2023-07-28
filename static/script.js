@@ -38,9 +38,12 @@ function Register() {
   userSelectedImageData = canvas.toDataURL("image/jpeg");
 
   document.getElementById("register_popup").classList.add("active");
+
+  console.log("User-selected image data:", userSelectedImageData); // Add this log statement
 }
 
 async function savePicture() {
+  console.log("User-selected image data:", userSelectedImageData);
   var canvas = document.getElementById("canvas");
   var context = canvas.getContext("2d");
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
