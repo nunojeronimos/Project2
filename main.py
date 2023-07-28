@@ -42,10 +42,8 @@ def compare_faces(image1, image2):
 
     # Iterate over the detected faces in image1
     for (x1, y1, w1, h1) in faces1:
-        print(f"Face detected in image1: x={x1}, y={y1}, w={w1}, h={h1}")
         # Iterate over the detected faces in image2
         for (x2, y2, w2, h2) in faces2:
-            print(f"Face detected in image2: x={x2}, y={y2}, w={w2}, h={h2}")
             # Compute the Euclidean distance between the face regions
             distance = np.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
@@ -94,22 +92,6 @@ def save_picture():
             # Decode the base64 image data
             image_data = base64.b64decode(picture_data.split(",")[1])
 
-            # Convert the image data to a NumPy array
-            nparr = np.frombuffer(image_data, np.uint8)
-            image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-
-            # Check if the image is valid and not empty
-            if image is None or image.size == 0:
-                print("Invalid image data received.")
-                return jsonify({"error": "Invalid image data received."}), 400
-
-            # Perform face detection on the image
-            faces = face_cascade.detectMultiScale(image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-            print("Number of faces detected:", len(faces))
-            if len(faces) == 0:
-                print("No face detected. Please try again.")
-                return jsonify({"error": "No face detected. Please try again."}), 400
-
             # Save the picture to Google Cloud Storage
             bucket_name = "jeronimo2"  # Replace with your actual bucket name
             client = storage.Client()
@@ -120,15 +102,11 @@ def save_picture():
 
             return "Picture saved successfully!", 200
         else:
-            print("Invalid picture data or picture name received.")
             return "Invalid picture data or picture name received.", 400
     except Exception as e:
         print("Error saving the picture:")
         print(traceback.format_exc())
         return "Failed to save the picture.", 500
-
-
-
 
 @app.route("/compare_picture", methods=["POST"])
 def compare_picture():
@@ -144,19 +122,9 @@ def compare_picture():
             nparr = np.frombuffer(image_data, np.uint8)
             image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-            print("Image data length:", len(image_data))
-            print("First few characters of image data:", image_data[:50])
-
             # Check if the image is valid and not empty
             if image is None or image.size == 0:
                 return jsonify({"error": "Invalid image data received."}), 400
-
-            # Perform face detection on the image
-            faces = face_cascade.detectMultiScale(image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-            print(len(faces))
-            if len(faces) == 0:
-                # No face detected
-                return jsonify({"error": "No face detected. Please try again."}), 400
 
             # Compare the image with the pictures in the Google Cloud Storage bucket
             bucket_name = "jeronimo2"  # Replace with your actual bucket name
@@ -192,7 +160,6 @@ def compare_picture():
         print("Error comparing the picture:")
         print(traceback.format_exc())
         return jsonify({"error": "Failed to compare the picture."}), 500
-
 
 
 
