@@ -42,8 +42,10 @@ def compare_faces(image1, image2):
 
     # Iterate over the detected faces in image1
     for (x1, y1, w1, h1) in faces1:
+        print(f"Face detected in image1: x={x1}, y={y1}, w={w1}, h={h1}")
         # Iterate over the detected faces in image2
         for (x2, y2, w2, h2) in faces2:
+            print(f"Face detected in image2: x={x2}, y={y2}, w={w2}, h={h2}")
             # Compute the Euclidean distance between the face regions
             distance = np.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
