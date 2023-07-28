@@ -5,9 +5,6 @@ document.addEventListener("DOMContentLoaded", function () {
   var registerButton = document.getElementById("register_button");
   registerButton.addEventListener("click", openRegisterPopup);
 
-  var tryAgainButton = document.getElementById("try_again_button");
-  tryAgainButton.addEventListener("click", tryAgain);
-
   var saveButton = document.getElementById("save_button");
   saveButton.addEventListener("click", savePicture); // Call savePicture function when the Save Picture button is clicked
 
@@ -49,6 +46,15 @@ async function savePicture() {
   var dataURL = picturePreview.src;
 
   try {
+    const response = await fetch("/compare_picture", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      // Send the image data as base64-encoded string
+      body: JSON.stringify({ picture: dataURL }),
+    });
+
     if (response.ok) {
       const data = await response.json();
       if (data.match) {
@@ -91,16 +97,6 @@ async function savePicture() {
     alert("An error occurred while comparing or saving the picture.");
     console.error("Error:", error);
   }
-}
-
-function tryAgain() {
-  var video = document.getElementById("video");
-  var canvas = document.getElementById("canvas");
-  var context = canvas.getContext("2d");
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-  var picturePreview = document.getElementById("register_image");
-  picturePreview.src = canvas.toDataURL("image/jpeg");
 }
 
 function Login() {
