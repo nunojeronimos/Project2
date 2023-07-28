@@ -12,8 +12,10 @@ document.addEventListener("DOMContentLoaded", function () {
   for (var i = 0; i < closeButtons.length; i++) {
     closeButtons[i].addEventListener("click", closePopup);
   }
-});
 
+  var saveButton = document.getElementById("save_button");
+  saveButton.addEventListener("click", savePicture);
+});
 function openRegisterPopup() {
   document.getElementById("register_popup").classList.add("active");
 }
