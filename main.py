@@ -144,6 +144,9 @@ def compare_picture():
             nparr = np.frombuffer(image_data, np.uint8)
             image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
+            print("Image data length:", len(image_data))
+            print("First few characters of image data:", image_data[:50])
+
             # Check if the image is valid and not empty
             if image is None or image.size == 0:
                 return jsonify({"error": "Invalid image data received."}), 400
