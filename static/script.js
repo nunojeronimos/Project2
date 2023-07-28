@@ -35,14 +35,8 @@ function Register() {
 }
 
 function savePicture() {
-  var canvas = document.getElementById("canvas");
-  var context = canvas.getContext("2d");
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
+  // Get the image data from the #register_image element
   var picturePreview = document.getElementById("register_image");
-  picturePreview.src = canvas.toDataURL("image/jpeg");
-
-  // Convert the data URL to a base64-encoded string
   var dataURL = picturePreview.src;
 
   var pictureName = document.getElementById("picture_name").value.trim();
