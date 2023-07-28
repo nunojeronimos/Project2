@@ -1,3 +1,5 @@
+let userSelectedImageData = null;
+
 document.addEventListener("DOMContentLoaded", function () {
   var loginButton = document.getElementById("login_button");
   loginButton.addEventListener("click", Login);
@@ -7,6 +9,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   var saveButton = document.getElementById("save_button");
   saveButton.addEventListener("click", savePicture); // Call savePicture function when the Save Picture button is clicked
+
+  var tryAgainButton = document.getElementById("try_again_button");
+  tryAgainButton.addEventListener("click", tryAgain);
 
   var closeButtons = document.getElementsByClassName("close-btn");
   for (var i = 0; i < closeButtons.length; i++) {
@@ -30,6 +35,7 @@ function Register() {
 
   var picturePreview = document.getElementById("register_image");
   picturePreview.src = canvas.toDataURL("image/jpeg");
+  userSelectedImageData = canvas.toDataURL("image/jpeg");
 
   document.getElementById("register_popup").classList.add("active");
 }
@@ -43,7 +49,7 @@ async function savePicture() {
   picturePreview.src = canvas.toDataURL("image/jpeg");
 
   // Convert the data URL to a base64-encoded string
-  var dataURL = picturePreview.src;
+  var dataURL = userSelectedImageData;
 
   try {
     const response = await fetch("/compare_picture", {
@@ -97,6 +103,11 @@ async function savePicture() {
     alert("An error occurred while comparing or saving the picture.");
     console.error("Error:", error);
   }
+}
+
+function tryAgain() {
+  // Clear the user-selected image data when the "Try Again" button is clicked
+  userSelectedImageData = null;
 }
 
 function Login() {
