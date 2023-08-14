@@ -70,13 +70,34 @@ function savePicture() {
 }
 
 function tryAgain() {
-  var video = document.getElementById("video");
-  var canvas = document.getElementById("canvas");
-  var context = canvas.getContext("2d");
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
   var picturePreview = document.getElementById("register_image");
-  picturePreview.src = canvas.toDataURL("image/jpeg");
+  var dataURL = picturePreview.src;
+
+  fetch("/compare_picture", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ picture: dataURL }),
+  })
+    .then(function (response) {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error("Failed to compare the picture.");
+      }
+    })
+    .then(function (data) {
+      if (data.match) {
+        alert("Welcome, " + data.name + "!");
+      } else {
+        alert("No match found.");
+      }
+    })
+    .catch(function (error) {
+      alert("An error occurred while comparing the picture.");
+      console.error("Error:", error);
+    });
 }
 
 function Login() {
