@@ -53,7 +53,23 @@ def compare_faces(image1, image2):
 
     return False
         
+@app.route("/try_again", methods=["POST"])
+def try_again():
+    try:
+        picture_data = request.get_data()
+        picture_name = request.args.get("name")
 
+        if picture_data and picture_name:
+            picture_path = os.path.join("db", f"{picture_name}.jpg")
+            with open(picture_path, "wb") as f:
+                f.write(base64.b64decode(picture_data.split(",")[1]))
+            return "New picture saved successfully!", 200
+        else:
+            return "Invalid picture data or picture name received.", 400
+    except Exception as e:
+        print("Error saving the new picture:")
+        print(traceback.format_exc())
+        return "Failed to save the new picture.", 500
 
 @app.route("/")
 def home():
@@ -73,24 +89,7 @@ def save_picture():
         picture_name = data.get("name")
 
         if picture_data and picture_name:
-            # Decode the base64 image data
             image_data = base64.b64decode(picture_data.split(",")[1])
-
-            # Convert the image data to a NumPy array
-            nparr = np.frombuffer(image_data, np.uint8)
-            image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-
-            # Check if the image is valid and not empty
-            if image is None or image.size == 0:
-                print("Invalid image data received.")
-                return jsonify({"error": "Invalid image data received."}), 400
-
-            # Perform face detection on the image
-            faces = face_cascade.detectMultiScale(image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-            print("Number of faces detected:", len(faces))
-            if len(faces) == 0:
-                print("No face detected. Please try again.")
-                return jsonify({"error": "No face detected. Please try again."}), 400
 
             # Save the picture to Google Cloud Storage
             bucket_name = "jeronimo2"  # Replace with your actual bucket name
@@ -98,7 +97,7 @@ def save_picture():
             bucket = client.bucket(bucket_name)
 
             blob = bucket.blob(f"{picture_name}.jpg")
-            blob.upload_from_file(io.BytesIO(image_data), content_type="image/jpeg")
+            blob.upload_from_string(image_data, content_type="image/jpeg")
 
             return "Picture saved successfully!", 200
         else:

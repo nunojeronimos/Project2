@@ -37,11 +37,7 @@
         <p>Login</p>
       </div>
     </div>
-    <button
-      class="register_button"
-      id="register_button"
-      onclick="openRegisterPopup()"
-    >
+    <button class="register_button" id="register_button" onclick="Register()">
       Register New User
     </button>
     <div class="popup" id="register_popup">
@@ -53,6 +49,13 @@
         <img id="register_image" />
         <button class="save_button" id="save_button" onclick="savePicture()">
           Save Picture
+        </button>
+        <button
+          class="try_again_button"
+          id="try_again_button"
+          onclick="tryAgain()"
+        >
+          Try Again
         </button>
       </div>
     </div>
