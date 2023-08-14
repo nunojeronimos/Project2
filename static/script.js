@@ -9,13 +9,15 @@ document.addEventListener("DOMContentLoaded", function () {
   tryAgainButton.addEventListener("click", tryAgain);
 
   var saveButton = document.getElementById("save_button");
-  saveButton.addEventListener("click", savePicture); // Call savePicture function when the Save Picture button is clicked
+  saveButton.addEventListener("click", savePicture);
 
   var closeButtons = document.getElementsByClassName("close-btn");
   for (var i = 0; i < closeButtons.length; i++) {
     closeButtons[i].addEventListener("click", closePopup);
   }
 });
+
+let registeredImageData = null; // Declare the variable to store the registered image data
 
 function openRegisterPopup() {
   document.getElementById("register_popup").classList.add("active");
@@ -34,19 +36,17 @@ function Register() {
   var picturePreview = document.getElementById("register_image");
   picturePreview.src = canvas.toDataURL("image/jpeg");
 
+  // Store the captured image data URL
+  registeredImageData = picturePreview.src;
+
   document.getElementById("register_popup").classList.add("active");
 }
 
 async function savePicture() {
-  var canvas = document.getElementById("canvas");
-  var context = canvas.getContext("2d");
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-  var picturePreview = document.getElementById("register_image");
-  picturePreview.src = canvas.toDataURL("image/jpeg");
-
-  // Convert the data URL to a base64-encoded string
-  var dataURL = picturePreview.src;
+  if (!registeredImageData) {
+    alert("No image to save. Please register a new user first.");
+    return;
+  }
 
   try {
     const response = await fetch("/save_picture", {
@@ -54,8 +54,8 @@ async function savePicture() {
       headers: {
         "Content-Type": "application/json",
       },
-      // Send the image data as base64-encoded string
-      body: JSON.stringify({ picture: dataURL, name: pictureName }),
+      // Send the registered image data as base64-encoded string
+      body: JSON.stringify({ picture: registeredImageData, name: pictureName }),
     });
 
     if (response.ok) {
