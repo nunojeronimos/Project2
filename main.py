@@ -53,23 +53,7 @@ def compare_faces(image1, image2):
 
     return False
         
-@app.route("/try_again", methods=["POST"])
-def try_again():
-    try:
-        picture_data = request.get_data()
-        picture_name = request.args.get("name")
 
-        if picture_data and picture_name:
-            picture_path = os.path.join("db", f"{picture_name}.jpg")
-            with open(picture_path, "wb") as f:
-                f.write(base64.b64decode(picture_data.split(",")[1]))
-            return "New picture saved successfully!", 200
-        else:
-            return "Invalid picture data or picture name received.", 400
-    except Exception as e:
-        print("Error saving the new picture:")
-        print(traceback.format_exc())
-        return "Failed to save the new picture.", 500
 
 @app.route("/")
 def home():

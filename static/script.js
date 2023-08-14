@@ -5,11 +5,8 @@ document.addEventListener("DOMContentLoaded", function () {
   var registerButton = document.getElementById("register_button");
   registerButton.addEventListener("click", openRegisterPopup);
 
-  var tryAgainButton = document.getElementById("try_again_button");
-  tryAgainButton.addEventListener("click", tryAgain);
-
   var saveButton = document.getElementById("save_button");
-  saveButton.addEventListener("click", savePicture); // Call savePicture function when the Save Picture button is clicked
+  saveButton.addEventListener("click", savePicture);
 
   var closeButtons = document.getElementsByClassName("close-btn");
   for (var i = 0; i < closeButtons.length; i++) {
@@ -17,9 +14,14 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-var capturedPictureURL = null;
+var capturedImageData = null;
 
 function openRegisterPopup() {
+  var canvas = document.getElementById("canvas");
+  var context = canvas.getContext("2d");
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  capturedImageData = canvas.toDataURL("image/jpeg");
+
   document.getElementById("register_popup").classList.add("active");
 }
 
@@ -35,7 +37,6 @@ function Register() {
 
   var picturePreview = document.getElementById("register_image");
   picturePreview.src = canvas.toDataURL("image/jpeg");
-  capturedPictureURL = picturePreview.src;
 
   document.getElementById("register_popup").classList.add("active");
 }
@@ -49,11 +50,7 @@ async function savePicture() {
   picturePreview.src = canvas.toDataURL("image/jpeg");
 
   // Convert the data URL to a base64-encoded string
-  var dataURL = picturePreview.src;
-  if (!capturedPictureURL) {
-    alert("No picture to save. Please capture a picture first.");
-    return;
-  }
+  var dataURL = capturedImageData;
 
   try {
     const response = await fetch("/compare_picture", {
@@ -109,16 +106,6 @@ async function savePicture() {
   }
 }
 
-function tryAgain() {
-  var video = document.getElementById("video");
-  var canvas = document.getElementById("canvas");
-  var context = canvas.getContext("2d");
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-  var picturePreview = document.getElementById("register_image");
-  picturePreview.src = canvas.toDataURL("image/jpeg");
-}
-
 function Login() {
   var canvas = document.getElementById("canvas");
   var context = canvas.getContext("2d");
@@ -126,8 +113,6 @@ function Login() {
 
   var picturePreview = document.getElementById("register_image");
   picturePreview.src = canvas.toDataURL("image/jpeg");
-
-  capturedPictureURL = picturePreview.src;
 
   // Convert the data URL to a base64-encoded string
   var dataURL = picturePreview.src;
