@@ -57,15 +57,19 @@ function savePicture() {
   })
     .then(function (response) {
       if (response.ok) {
-        alert("Picture saved successfully!");
-        closePopup();
+        //alert("Picture saved successfully!");
+        //closePopup();
+        return response.text();
       } else {
-        alert("Failed to save the picture.");
+        //alert("Failed to save the picture.");
+        throw new Error("Failed to save the picture.");
       }
     })
     .catch(function (error) {
       alert("An error occurred while saving the picture.");
       console.error("Error:", error);
+      console.log("Response from server:", data);
+      console.error("Error occurred:", error);
     });
 }
 
