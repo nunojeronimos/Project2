@@ -23,6 +23,11 @@ function closePopup() {
 }
 
 function Register() {
+  captureImage();
+  document.getElementById("register_popup").classList.add("active");
+}
+
+function captureImage() {
   var video = document.getElementById("video");
   var canvas = document.getElementById("canvas");
   var context = canvas.getContext("2d");
@@ -30,14 +35,10 @@ function Register() {
 
   var picturePreview = document.getElementById("register_image");
   picturePreview.src = canvas.toDataURL("image/jpeg");
-
-  document.getElementById("register_popup").classList.add("active");
 }
 
 function savePicture() {
   var picturePreview = document.getElementById("register_image");
-
-  // Convert the data URL to a base64-encoded string
   var dataURL = picturePreview.src;
 
   var pictureName = document.getElementById("picture_name").value.trim();
@@ -52,24 +53,19 @@ function savePicture() {
     headers: {
       "Content-Type": "application/json",
     },
-    // Send the image data as base64-encoded string
     body: JSON.stringify({ picture: dataURL, name: pictureName }),
   })
     .then(function (response) {
       if (response.ok) {
-        //alert("Picture saved successfully!");
-        //closePopup();
-        return response.text();
+        alert("Picture saved successfully!");
+        closePopup();
       } else {
-        //alert("Failed to save the picture.");
         throw new Error("Failed to save the picture.");
       }
     })
     .catch(function (error) {
       alert("An error occurred while saving the picture.");
       console.error("Error:", error);
-      console.log("Response from server:", data);
-      console.error("Error occurred:", error);
     });
 }
 
