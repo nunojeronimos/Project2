@@ -43,24 +43,6 @@ function savePicture() {
   var dataURL = picturePreview.src;
 
   var pictureName = document.getElementById("picture_name").value.trim();
-
-  if (!pictureName) {
-    alert("Please enter a picture name.");
-    return;
-  }
-
-  fetch("/save_picture", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ picture: dataURL, name: pictureName }),
-  });
-  console.log("dentro fetch").then(function (response) {
-    console.log("guardei");
-    alert("Picture saved successfully!");
-    closePopup();
-  });
 }
 
 function tryAgain() {
