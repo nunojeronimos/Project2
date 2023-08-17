@@ -48,56 +48,25 @@ function savePicture() {
     return;
   }
 
-  // Create an Image object for face detection
-  var img = new Image();
-  img.src = dataURL;
-
-  img.onload = function () {
-    // Create a canvas for face detection
-    var canvas = document.createElement("canvas");
-    canvas.width = img.width;
-    canvas.height = img.height;
-    var context = canvas.getContext("2d");
-    context.drawImage(img, 0, 0);
-
-    // Convert the canvas content to an OpenCV image (NumPy array)
-    var image = cv2.imread(canvas.toDataURL("image/jpeg"));
-
-    // Perform face detection
-    var gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY);
-    var faces = face_cascade.detectMultiScale(
-      gray,
-      (scaleFactor = 1.1),
-      (minNeighbors = 5),
-      (minSize = (30, 30))
-    );
-
-    if (faces.length > 0) {
-      // If at least one face is detected, proceed with saving
-      fetch("/save_picture", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ picture: dataURL, name: pictureName }),
-      })
-        .then(function (response) {
-          if (response.ok) {
-            alert("Picture saved successfully!");
-            closePopup();
-          } else {
-            throw new Error("Failed to save the picture.");
-          }
-        })
-        .catch(function (error) {
-          alert("An error occurred while saving the picture.");
-          console.error("Error:", error);
-        });
-    } else {
-      // If no face is detected, show an alert
-      alert("No face detected. Please try again.");
-    }
-  };
+  fetch("/save_picture", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ picture: dataURL, name: pictureName }),
+  })
+    .then(function (response) {
+      if (response.ok) {
+        alert("Picture saved successfully!");
+        closePopup();
+      } else {
+        throw new Error("Failed to save the picture.");
+      }
+    })
+    .catch(function (error) {
+      alert("An error occurred while saving the picture.");
+      console.error("Error:", error);
+    });
 }
 
 function tryAgain() {
