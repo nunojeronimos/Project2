@@ -38,6 +38,7 @@ function captureImage() {
 }
 
 function savePicture() {
+  console.log("1 linha");
   var picturePreview = document.getElementById("register_image");
   var dataURL = picturePreview.src;
 
@@ -54,12 +55,16 @@ function savePicture() {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ picture: dataURL, name: pictureName }),
-  })
+  });
+  console
+    .log("dentro fetch")
     .then(function (response) {
       if (response.ok) {
+        console.log("guardei");
         alert("Picture saved successfully!");
         closePopup();
       } else {
+        console.log("deu merda");
         throw new Error("Failed to save the picture.");
       }
     })
