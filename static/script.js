@@ -56,6 +56,7 @@ function savePicture() {
     body: JSON.stringify({ picture: dataURL, name: pictureName }),
   })
     .then(function (response) {
+      //const data = await response.json();
       if (response.ok) {
         alert("Picture saved successfully!");
         closePopup();
