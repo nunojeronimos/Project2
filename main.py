@@ -153,7 +153,7 @@ def compare_picture():
             if match:
                 return jsonify({"match": True, "name": name})
             else:
-                return jsonify({"match": False})
+                return jsonify({"match": False, "error": "No face detected."})
         else:
             return jsonify({"error": "Invalid picture data received."}), 400
     except Exception as e:

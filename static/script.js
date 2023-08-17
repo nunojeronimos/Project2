@@ -74,26 +74,30 @@ function savePicture() {
       })
       .then(function (data) {
         if (data.match) {
-          // If a face is detected, proceed to save the picture
-          fetch("/save_picture", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ picture: dataURL, name: pictureName }),
-          })
-            .then(function (response) {
-              if (response.ok) {
-                alert("Picture saved successfully!");
-                closePopup();
-              } else {
-                throw new Error("Failed to save the picture.");
-              }
+          if (!data.error) {
+            // If a face is detected and there's no error, proceed to save the picture
+            fetch("/save_picture", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ picture: dataURL, name: pictureName }),
             })
-            .catch(function (error) {
-              alert("An error occurred while saving the picture.");
-              console.error("Error:", error);
-            });
+              .then(function (response) {
+                if (response.ok) {
+                  alert("Picture saved successfully!");
+                  closePopup();
+                } else {
+                  throw new Error("Failed to save the picture.");
+                }
+              })
+              .catch(function (error) {
+                alert("An error occurred while saving the picture.");
+                console.error("Error:", error);
+              });
+          } else {
+            alert("An error occurred: " + data.error);
+          }
         } else {
           alert("No face detected. Please try again.");
         }
