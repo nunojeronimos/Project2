@@ -56,22 +56,11 @@ function savePicture() {
     },
     body: JSON.stringify({ picture: dataURL, name: pictureName }),
   });
-  console
-    .log("dentro fetch")
-    .then(function (response) {
-      if (response.ok) {
-        console.log("guardei");
-        alert("Picture saved successfully!");
-        closePopup();
-      } else {
-        console.log("deu merda");
-        throw new Error("Failed to save the picture.");
-      }
-    })
-    .catch(function (error) {
-      alert("An error occurred while saving the picture.");
-      console.error("Error:", error);
-    });
+  console.log("dentro fetch").then(function (response) {
+    console.log("guardei");
+    alert("Picture saved successfully!");
+    closePopup();
+  });
 }
 
 function tryAgain() {
