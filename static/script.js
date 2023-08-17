@@ -48,26 +48,61 @@ function savePicture() {
     return;
   }
 
-  fetch("/save_picture", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ picture: dataURL, name: pictureName }),
-  })
-    .then(function (response) {
-      //const data = await response.json();
-      if (response.ok) {
-        alert("Picture saved successfully!");
-        closePopup();
-      } else {
-        throw new Error("Failed to save the picture.");
-      }
+  // Create an image element to perform face detection
+  var img = new Image();
+  img.src = dataURL;
+
+  img.onload = function () {
+    // Create a canvas to draw the image and perform face detection
+    var tempCanvas = document.createElement("canvas");
+    tempCanvas.width = img.width;
+    tempCanvas.height = img.height;
+    var context = tempCanvas.getContext("2d");
+    context.drawImage(img, 0, 0);
+
+    // Perform face detection using the canvas image data
+    var faceData = tempCanvas.toDataURL("image/jpeg");
+    fetch("/compare_picture", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ picture: faceData }),
     })
-    .catch(function (error) {
-      alert("An error occurred while saving the picture.");
-      console.error("Error:", error);
-    });
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (data) {
+        if (data.match) {
+          // If a face is detected, proceed to save the picture
+          fetch("/save_picture", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ picture: dataURL, name: pictureName }),
+          })
+            .then(function (response) {
+              if (response.ok) {
+                alert("Picture saved successfully!");
+                closePopup();
+              } else {
+                throw new Error("Failed to save the picture.");
+              }
+            })
+            .catch(function (error) {
+              alert("An error occurred while saving the picture.");
+              console.error("Error:", error);
+            });
+        } else {
+          alert("No face detected. Please try again.");
+        }
+      })
+      .catch(function (error) {
+        alert("An error occurred while comparing the picture.");
+        console.error("Error:", error);
+      });
+  };
 }
 
 function tryAgain() {
