@@ -62,44 +62,64 @@ function savePicture() {
 
     // Perform face detection using the canvas image data
     var faceData = tempCanvas.toDataURL("image/jpeg");
-    fetch("/compare_picture", {
+
+    fetch("/check_name", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ picture: faceData }),
+      body: JSON.stringify({ name: pictureName }),
     })
       .then(function (response) {
         return response.json();
       })
       .then(function (data) {
-        if (data.match) {
-          if (!data.error) {
-            // If a face is detected and there's no error, proceed to save the picture
-            fetch("/save_picture", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ picture: dataURL, name: pictureName }),
-            })
-              .then(function (response) {
-                if (response.ok) {
-                  alert("Picture saved successfully!");
-                  closePopup();
-                } else {
-                  throw new Error("Failed to save the picture.");
-                }
-              })
-              .catch(function (error) {
-                alert("An error occurred while saving the picture.");
-                console.error("Error:", error);
-              });
-          } else {
-            alert("An error occurred: " + data.error);
-          }
+        if (data.exists) {
+          alert("That name already exists. Please choose another.");
         } else {
-          alert("No face detected. Please try again.");
+          fetch("/compare_picture", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ picture: faceData }),
+          })
+            .then(function (response) {
+              return response.json();
+            })
+            .then(function (data) {
+              if (data.match) {
+                if (!data.error) {
+                  // If a face is detected and there's no error, proceed to save the picture
+                  fetch("/save_picture", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      picture: dataURL,
+                      name: pictureName,
+                    }),
+                  })
+                    .then(function (response) {
+                      if (response.ok) {
+                        alert("Picture saved successfully!");
+                        closePopup();
+                      } else {
+                        throw new Error("Failed to save the picture.");
+                      }
+                    })
+                    .catch(function (error) {
+                      alert("An error occurred while saving the picture.");
+                      console.error("Error:", error);
+                    });
+                } else {
+                  alert("An error occurred: " + data.error);
+                }
+              } else {
+                alert("No face detected. Please try again.");
+              }
+            });
         }
       })
       .catch(function (error) {

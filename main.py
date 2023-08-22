@@ -107,6 +107,32 @@ def save_picture():
         print("Error saving the picture:")
         print(traceback.format_exc())
         return "Failed to save the picture.", 500
+    
+@app.route("/check_name", methods=["POST"])
+def check_name():
+    try:
+        data = request.json
+        picture_name = data.get("name")
+
+        if picture_name:
+            # Check if the name already exists in your database or storage
+            bucket_name = "jeronimo2"  # Replace with your actual bucket name
+            client = storage.Client()
+            bucket = client.bucket(bucket_name)
+
+            for blob in bucket.list_blobs():
+                existing_name = blob.name.split(".")[0]
+                if existing_name == picture_name:
+                    return jsonify({"exists": True})
+
+            return jsonify({"exists": False})
+        else:
+            return jsonify({"exists": False})
+
+    except Exception as e:
+        print("Error checking the name:")
+        print(traceback.format_exc())
+        return jsonify({"exists": False})
 
 @app.route("/compare_picture", methods=["POST"])
 def compare_picture():
