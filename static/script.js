@@ -12,6 +12,15 @@ document.addEventListener("DOMContentLoaded", function () {
   for (var i = 0; i < closeButtons.length; i++) {
     closeButtons[i].addEventListener("click", closePopup);
   }
+
+  var video = document.getElementById("video");
+  var isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+  if (isiOS) {
+    document.addEventListener("click", function () {
+      video.play();
+    });
+  }
 });
 
 function openRegisterPopup() {
