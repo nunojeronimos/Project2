@@ -172,14 +172,11 @@ def compare_picture():
 
                 # Compare the images using the face recognition algorithm
                 if compare_faces(image, known_image):
-                    match = True
-                    name = blob.name.split(".")[0]
-                    break
-
+                    return jsonify({"match": True, "facesDetected": 1})
             if match:
                 return jsonify({"match": True, "name": name})
             else:
-                return jsonify({"match": False, "error": "No face detected."})
+                return jsonify({"match": False, "facesDetected": 0})
         else:
             return jsonify({"error": "Invalid picture data received."}), 400
     except Exception as e:
