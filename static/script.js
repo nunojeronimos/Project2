@@ -90,34 +90,41 @@ function savePicture() {
             .then(function (data) {
               if (data.match) {
                 if (!data.error) {
-                  // If a face is detected and there's no error, proceed to save the picture
-                  fetch("/save_picture", {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                      picture: dataURL,
-                      name: pictureName,
-                    }),
-                  })
-                    .then(function (response) {
-                      if (response.ok) {
-                        alert("Picture saved successfully!");
-                        closePopup();
-                      } else {
-                        throw new Error("Failed to save the picture.");
-                      }
+                  var numDetectedFaces = data.facesDetected;
+                  if (numDetectedFaces === 1) {
+                    // If a face is detected and there's no error, proceed to save the picture
+                    fetch("/save_picture", {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        picture: dataURL,
+                        name: pictureName,
+                      }),
                     })
-                    .catch(function (error) {
-                      alert("An error occurred while saving the picture.");
-                      console.error("Error:", error);
-                    });
+                      .then(function (response) {
+                        if (response.ok) {
+                          alert("Picture saved successfully!");
+                          closePopup();
+                        } else {
+                          throw new Error("Failed to save the picture.");
+                        }
+                      })
+                      .catch(function (error) {
+                        alert("An error occurred while saving the picture.");
+                        console.error("Error:", error);
+                      });
+                  } else if (numDetectedFaces > 1) {
+                    alert(
+                      "More than one face detected. Please take the picture alone."
+                    );
+                  } else {
+                    alert("An error occurred: " + data.error);
+                  }
                 } else {
-                  alert("An error occurred: " + data.error);
+                  alert("No face detected. Please try again.");
                 }
-              } else {
-                alert("No face detected. Please try again.");
               }
             });
         }
