@@ -148,6 +148,9 @@ def compare_picture():
         picture_data = data.get("picture")
         picture_name = data.get("name")
 
+        app.logger.info(f"Received picture data: {picture_data}")
+        app.logger.info(f"Received picture name: {picture_name}")
+
         if picture_data and picture_name:
             # Decode the base64 image data
             image_data = base64.b64decode(picture_data.split(",")[1])
