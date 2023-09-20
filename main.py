@@ -99,8 +99,8 @@ def save_picture():
             client = storage.Client()
             bucket = client.bucket(bucket_name)
 
-            #blob = bucket.blob(f"{picture_name}.jpg")
-            #blob.upload_from_file(io.BytesIO(image_data), content_type="image/jpeg")
+            blob = bucket.blob(f"{picture_name}.jpg")
+            blob.upload_from_file(io.BytesIO(image_data), content_type="image/jpeg")
             #blob = bucket.blob(f"{picture_name}.jpg")
             #blob.upload_from_file(io.BytesIO(image_data), content_type="image/jpeg")
 
@@ -151,9 +151,8 @@ def compare_picture():
     try:
         data = request.json
         picture_data = data.get("picture")
-        picture_name = data.get("name")
 
-        if picture_data and picture_name:
+        if picture_data:
             # Decode the base64 image data
             image_data = base64.b64decode(picture_data.split(",")[1])
 
@@ -165,9 +164,6 @@ def compare_picture():
             if image is None or image.size == 0:
                 return jsonify({"error": "Invalid image data received."}), 400
 
-            # Specify the user's folder to search for pictures
-            user_folder = f"user_{picture_name}"
-
             # Compare the image with the pictures in the Google Cloud Storage bucket
             bucket_name = "jeronimo2"  # Replace with your actual bucket name
             client = storage.Client()
@@ -176,7 +172,7 @@ def compare_picture():
             match = False
             name = ""
 
-            for blob in bucket.list_blobs(prefix=user_folder + "/"):
+            for blob in bucket.list_blobs():
                 # Download the known image from the bucket
                 known_image_data = blob.download_as_bytes()
                 known_image_nparr = np.frombuffer(known_image_data, np.uint8)
