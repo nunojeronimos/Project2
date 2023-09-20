@@ -3,7 +3,6 @@ import os
 import base64
 import numpy as np
 import io
-#1
 from flask import Flask, render_template, request, Response, jsonify
 from google.cloud import storage
 from google.auth import compute_engine
