@@ -8,6 +8,7 @@ from flask import Flask, render_template, request, Response, jsonify
 from google.cloud import storage
 from google.auth import compute_engine
 
+#teste
 app = Flask(__name__, static_folder='static')
 
 camera = cv2.VideoCapture(0)
