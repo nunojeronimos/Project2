@@ -99,11 +99,6 @@ def save_picture():
             client = storage.Client()
             bucket = client.bucket(bucket_name)
 
-            blob = bucket.blob(f"{picture_name}.jpg")
-            blob.upload_from_file(io.BytesIO(image_data), content_type="image/jpeg")
-            #blob = bucket.blob(f"{picture_name}.jpg")
-            #blob.upload_from_file(io.BytesIO(image_data), content_type="image/jpeg")
-
             # Create the user's folder if it doesn't exist
             user_blob = bucket.blob(user_folder + "/")
             user_blob.upload_from_string("")
