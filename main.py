@@ -174,20 +174,24 @@ def compare_picture():
             name = ""
 
             for blob in bucket.list_blobs():
-                # Download the known image from the bucket
-                known_image_data = blob.download_as_bytes()
-                known_image_nparr = np.frombuffer(known_image_data, np.uint8)
-                known_image = cv2.imdecode(known_image_nparr, cv2.IMREAD_COLOR)
+                try:    
+                    # Download the known image from the bucket
+                    known_image_data = blob.download_as_bytes()
+                    known_image_nparr = np.frombuffer(known_image_data, np.uint8)
+                    known_image = cv2.imdecode(known_image_nparr, cv2.IMREAD_COLOR)
 
-                # Check if the known_image is valid and not empty
-                if known_image is None or known_image.size == 0:
-                    continue
+                    # Check if the known_image is valid and not empty
+                    if known_image is None or known_image.size == 0:
+                        continue
 
-                # Compare the images using the face recognition algorithm
-                if compare_faces(image, known_image):
-                    match = True
-                    name = blob.name.split(".")[0]
-                    break
+                    # Compare the images using the face recognition algorithm
+                    if compare_faces(image, known_image):
+                        match = True
+                        name = blob.name.split(".")[0]
+                        break
+                except Exception as e:
+                    print("Error processing known image:", e)
+                    continue    
 
             if match:
                 return jsonify({"match": True, "name": name})
