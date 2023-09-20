@@ -92,6 +92,9 @@ def save_picture():
             # Decode the base64 image data
             image_data = base64.b64decode(picture_data.split(",")[1])
 
+            # Define the folder path for the user
+            user_folder = f"user_{picture_name}"
+
             # Save the picture to Google Cloud Storage
             bucket_name = "jeronimo2"  # Replace with your actual bucket name
             client = storage.Client()
@@ -99,6 +102,16 @@ def save_picture():
 
             blob = bucket.blob(f"{picture_name}.jpg")
             blob.upload_from_file(io.BytesIO(image_data), content_type="image/jpeg")
+            #blob = bucket.blob(f"{picture_name}.jpg")
+            #blob.upload_from_file(io.BytesIO(image_data), content_type="image/jpeg")
+
+            # Create the user's folder if it doesn't exist
+            user_blob = bucket.blob(user_folder + "/")
+            user_blob.upload_from_string("")
+
+            # Upload the picture inside the user's folder
+            picture_blob = bucket.blob(f"{user_folder}/{picture_name}.jpg")
+            picture_blob.upload_from_string(image_data, content_type="image/jpeg")
 
             return "Picture saved successfully!", 200
         else:
