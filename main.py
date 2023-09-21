@@ -146,8 +146,9 @@ def compare_picture():
     try:
         data = request.json
         picture_data = data.get("picture")
+        picture_name = data.get("name")  # User's name
 
-        if picture_data:
+        if picture_data and picture_name:
             # Decode the base64 image data
             image_data = base64.b64decode(picture_data.split(",")[1])
 
@@ -165,10 +166,13 @@ def compare_picture():
             bucket = client.bucket(bucket_name)
 
             match = False
-            name = ""
+            user_name = ""
 
-            for blob in bucket.list_blobs():
-                # Download the known image from the bucket
+            for blob in bucket.list_blobs(prefix="user_"):  # Iterate through user directories
+                # Extract the user's name from the directory name
+                user_name = blob.name.split("/")[0].replace("user_", "")
+
+                # Download the known image from the user's directory
                 known_image_data = blob.download_as_bytes()
                 known_image_nparr = np.frombuffer(known_image_data, np.uint8)
                 known_image = cv2.imdecode(known_image_nparr, cv2.IMREAD_COLOR)
@@ -180,15 +184,14 @@ def compare_picture():
                 # Compare the images using the face recognition algorithm
                 if compare_faces(image, known_image):
                     match = True
-                    name = blob.name.split(".")[0]
                     break
 
             if match:
-                return jsonify({"match": True, "name": name})
+                return jsonify({"match": True, "name": user_name})
             else:
-                return jsonify({"match": False, "error": "No face detected."})
+                return jsonify({"match": False, "error": "No face detected or no matching user."})
         else:
-            return jsonify({"error": "Invalid picture data received."}), 400
+            return jsonify({"error": "Invalid picture data or name received."}), 400
     except Exception as e:
         print("Error comparing the picture:")
         print(traceback.format_exc())
