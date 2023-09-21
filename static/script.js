@@ -157,6 +157,9 @@ function Login() {
     return;
   }
 
+  console.log("dataURL:", dataURL);
+  console.log("pictureName:", pictureName);
+
   fetch("/compare_picture", {
     method: "POST",
     headers: {
