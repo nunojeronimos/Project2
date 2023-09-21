@@ -174,7 +174,7 @@ def compare_picture():
                 user_name = user_directory.split("/")[-1]  # Extract the user's name from the directory path
 
                 # Download the known image from the user's directory
-                known_image_blob = bucket.blob(f"{user_directory}/picture_{user_name}.jpg")
+                known_image_blob = bucket.blob(f"{user_directory}/{user_name}.jpg")  # Updated object path
                 known_image_data = known_image_blob.download_as_bytes()
                 known_image_nparr = np.frombuffer(known_image_data, np.uint8)
                 known_image = cv2.imdecode(known_image_nparr, cv2.IMREAD_COLOR)
