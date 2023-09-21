@@ -150,13 +150,20 @@ function Login() {
   // Convert the data URL to a base64-encoded string
   var dataURL = picturePreview.src;
 
+  var pictureName = document.getElementById("picture_name").value.trim();
+
+  if (!pictureName) {
+    alert("Please enter a picture name.");
+    return;
+  }
+
   fetch("/compare_picture", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     // Send the image data as base64-encoded string
-    body: JSON.stringify({ picture: dataURL }),
+    body: JSON.stringify({ picture: dataURL, name: pictureName }),
   })
     .then(function (response) {
       if (response.ok) {
