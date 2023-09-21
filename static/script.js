@@ -137,6 +137,8 @@ function tryAgain() {
 
   var picturePreview = document.getElementById("register_image");
   picturePreview.src = canvas.toDataURL("image/jpeg");
+
+  console.log("por favor funciona");
 }
 
 function Login() {
