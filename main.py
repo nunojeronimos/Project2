@@ -3,7 +3,6 @@ import os
 import base64
 import numpy as np
 import io
-
 from flask import Flask, render_template, request, Response, jsonify
 from google.cloud import storage
 from google.auth import compute_engine
@@ -99,11 +98,6 @@ def save_picture():
             bucket_name = "jeronimo2"  # Replace with your actual bucket name
             client = storage.Client()
             bucket = client.bucket(bucket_name)
-
-            blob = bucket.blob(f"{picture_name}.jpg")
-            blob.upload_from_file(io.BytesIO(image_data), content_type="image/jpeg")
-            #blob = bucket.blob(f"{picture_name}.jpg")
-            #blob.upload_from_file(io.BytesIO(image_data), content_type="image/jpeg")
 
             # Create the user's folder if it doesn't exist
             user_blob = bucket.blob(user_folder + "/")
