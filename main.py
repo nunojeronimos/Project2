@@ -3,6 +3,7 @@ import os
 import base64
 import numpy as np
 import io
+
 from flask import Flask, render_template, request, Response, jsonify
 from google.cloud import storage
 from google.auth import compute_engine
@@ -99,6 +100,11 @@ def save_picture():
             client = storage.Client()
             bucket = client.bucket(bucket_name)
 
+            blob = bucket.blob(f"{picture_name}.jpg")
+            blob.upload_from_file(io.BytesIO(image_data), content_type="image/jpeg")
+            #blob = bucket.blob(f"{picture_name}.jpg")
+            #blob.upload_from_file(io.BytesIO(image_data), content_type="image/jpeg")
+
             # Create the user's folder if it doesn't exist
             user_blob = bucket.blob(user_folder + "/")
             user_blob.upload_from_string("")
@@ -159,23 +165,17 @@ def compare_picture():
             if image is None or image.size == 0:
                 return jsonify({"error": "Invalid image data received."}), 400
 
-            # Get a list of all user directories in your Google Cloud Storage bucket
+            # Compare the image with the pictures in the Google Cloud Storage bucket
             bucket_name = "jeronimo2"  # Replace with your actual bucket name
             client = storage.Client()
             bucket = client.bucket(bucket_name)
-            user_directories = [blob.name for blob in bucket.list_blobs() if "/" in blob.name]
 
             match = False
             name = ""
 
-            # Iterate through each user's directory
-            for user_directory in user_directories:
-                user_directory = user_directory.rstrip("/")  # Remove trailing slashes
-                user_name = user_directory.split("/")[-1]  # Extract the user's name from the directory path
-
-                # Download the known image from the user's directory
-                known_image_blob = bucket.blob(f"{user_directory}/{user_name}.jpg")  # Updated object path
-                known_image_data = known_image_blob.download_as_bytes()
+            for blob in bucket.list_blobs():
+                # Download the known image from the bucket
+                known_image_data = blob.download_as_bytes()
                 known_image_nparr = np.frombuffer(known_image_data, np.uint8)
                 known_image = cv2.imdecode(known_image_nparr, cv2.IMREAD_COLOR)
 
@@ -186,7 +186,7 @@ def compare_picture():
                 # Compare the images using the face recognition algorithm
                 if compare_faces(image, known_image):
                     match = True
-                    name = user_name
+                    name = blob.name.split(".")[0]
                     break
 
             if match:
@@ -199,7 +199,6 @@ def compare_picture():
         print("Error comparing the picture:")
         print(traceback.format_exc())
         return jsonify({"error": "Failed to compare the picture."}), 500
-
 
 
 
