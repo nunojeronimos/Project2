@@ -162,7 +162,7 @@ function Login() {
     headers: {
       "Content-Type": "application/json",
     },
-    // Send the image data as base64-encoded string
+    // Send the image data as base64-encoded string and the user's name
     body: JSON.stringify({ picture: dataURL, name: pictureName }),
   })
     .then(function (response) {
@@ -176,7 +176,7 @@ function Login() {
       if (data.match) {
         alert("Welcome, " + data.name + "!");
       } else {
-        alert("No match found.");
+        alert("No match found or no matching user.");
       }
     })
     .catch(function (error) {
