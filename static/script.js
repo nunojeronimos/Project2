@@ -150,23 +150,13 @@ function Login() {
   // Convert the data URL to a base64-encoded string
   var dataURL = picturePreview.src;
 
-  var pictureName = document.getElementById("picture_name").value.trim();
-
-  if (!pictureName) {
-    alert("Please enter a picture name.");
-    return;
-  }
-
-  console.log("dataURL:", dataURL);
-  console.log("pictureName:", pictureName);
-
   fetch("/compare_picture", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    // Send the image data as base64-encoded string and the user's name
-    body: JSON.stringify({ picture: dataURL, name: pictureName }),
+    // Send the image data as base64-encoded string
+    body: JSON.stringify({ picture: dataURL }),
   })
     .then(function (response) {
       if (response.ok) {
@@ -179,7 +169,7 @@ function Login() {
       if (data.match) {
         alert("Welcome, " + data.name + "!");
       } else {
-        alert("No match found or no matching user.");
+        alert("No match found.");
       }
     })
     .catch(function (error) {
