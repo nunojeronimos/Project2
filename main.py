@@ -173,6 +173,11 @@ def compare_picture():
 
                 # Download the known image from the user's directory
                 known_image_data = blob.download_as_bytes()
+
+                # Check if the known_image_data is empty or invalid
+                if not known_image_data:
+                    continue
+
                 known_image_nparr = np.frombuffer(known_image_data, np.uint8)
                 known_image = cv2.imdecode(known_image_nparr, cv2.IMREAD_COLOR)
 
