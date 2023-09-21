@@ -192,10 +192,9 @@ def compare_picture():
             else:
                 return jsonify({"match": False, "error": "No face detected."})
         else:
-            return jsonify({"error": "Invalid data received."}), 400
+            return jsonify({"error": "Invalid data received. Make sure you are sending user_name, picture_name, and picture as JSON."}), 400
     except Exception as e:
-        print("Error comparing the picture:")
-        print(traceback.format_exc())
+        print("Error comparing the picture:", str(e))  # Log the specific error
         return jsonify({"error": "Failed to compare the picture."}), 500
 
 
