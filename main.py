@@ -146,8 +146,10 @@ def compare_picture():
     try:
         data = request.json
         picture_data = data.get("picture")
+        picture_name = data.get("picture_name")
+        user_name = data.get("user_name")
 
-        if picture_data:
+        if user_name and picture_name and picture_data:
             # Decode the base64 image data
             image_data = base64.b64decode(picture_data.split(",")[1])
 
@@ -159,15 +161,17 @@ def compare_picture():
             if image is None or image.size == 0:
                 return jsonify({"error": "Invalid image data received."}), 400
 
+            # Construct the user's folder path
+            user_folder = f"user_{user_name}"
+
             # Compare the image with the pictures in the Google Cloud Storage bucket
             bucket_name = "jeronimo2"  # Replace with your actual bucket name
             client = storage.Client()
             bucket = client.bucket(bucket_name)
 
             match = False
-            name = ""
 
-            for blob in bucket.list_blobs():
+            for blob in bucket.list_blobs(prefix=user_folder):
                 # Download the known image from the bucket
                 known_image_data = blob.download_as_bytes()
                 known_image_nparr = np.frombuffer(known_image_data, np.uint8)
@@ -180,11 +184,10 @@ def compare_picture():
                 # Compare the images using the face recognition algorithm
                 if compare_faces(image, known_image):
                     match = True
-                    name = blob.name.split(".")[0]
                     break
 
             if match:
-                return jsonify({"match": True, "name": name})
+                return jsonify({"match": True, "user_name": user_name, "picture_name": picture_name})
             else:
                 return jsonify({"match": False, "error": "No face detected."})
         else:
