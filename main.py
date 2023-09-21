@@ -146,9 +146,8 @@ def compare_picture():
     try:
         data = request.json
         picture_data = data.get("picture")
-        picture_name = data.get("name")  # User's name
 
-        if picture_data and picture_name:
+        if picture_data:
             # Decode the base64 image data
             image_data = base64.b64decode(picture_data.split(",")[1])
 
@@ -191,7 +190,7 @@ def compare_picture():
             else:
                 return jsonify({"match": False, "error": "No face detected or no matching user."})
         else:
-            return jsonify({"error": "Invalid picture data or name received."}), 400
+            return jsonify({"error": "Invalid picture data received."}), 400
     except Exception as e:
         print("Error comparing the picture:")
         print(traceback.format_exc())
