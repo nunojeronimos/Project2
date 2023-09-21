@@ -145,9 +145,9 @@ def check_name():
 def compare_picture():
     try:
         data = request.json
-        picture_data = data.get("picture")
-        picture_name = data.get("picture_name")
         user_name = data.get("user_name")
+        picture_name = data.get("picture_name")
+        picture_data = data.get("picture")
 
         if user_name and picture_name and picture_data:
             # Decode the base64 image data
@@ -164,13 +164,14 @@ def compare_picture():
             # Construct the user's folder path
             user_folder = f"user_{user_name}"
 
-            # Compare the image with the pictures in the Google Cloud Storage bucket
+            # Compare the image with the pictures in the user's directory in Google Cloud Storage
             bucket_name = "jeronimo2"  # Replace with your actual bucket name
             client = storage.Client()
             bucket = client.bucket(bucket_name)
 
             match = False
 
+            # Iterate over blobs in the user's directory
             for blob in bucket.list_blobs(prefix=user_folder):
                 # Download the known image from the bucket
                 known_image_data = blob.download_as_bytes()
@@ -191,11 +192,12 @@ def compare_picture():
             else:
                 return jsonify({"match": False, "error": "No face detected."})
         else:
-            return jsonify({"error": "Invalid picture data received."}), 400
+            return jsonify({"error": "Invalid data received."}), 400
     except Exception as e:
         print("Error comparing the picture:")
         print(traceback.format_exc())
         return jsonify({"error": "Failed to compare the picture."}), 500
+
 
 
 
