@@ -145,11 +145,9 @@ def check_name():
 def compare_picture():
     try:
         data = request.json
-        user_name = data.get("user_name")
-        picture_name = data.get("picture_name")
         picture_data = data.get("picture")
 
-        if user_name and picture_name and picture_data:
+        if picture_data:
             # Decode the base64 image data
             image_data = base64.b64decode(picture_data.split(",")[1])
 
@@ -161,20 +159,23 @@ def compare_picture():
             if image is None or image.size == 0:
                 return jsonify({"error": "Invalid image data received."}), 400
 
-            # Construct the user's folder path
-            user_folder = f"user_{user_name}"
-
-            # Compare the image with the pictures in the user's directory in Google Cloud Storage
+            # Get a list of all user directories in your Google Cloud Storage bucket
             bucket_name = "jeronimo2"  # Replace with your actual bucket name
             client = storage.Client()
             bucket = client.bucket(bucket_name)
+            user_directories = [blob.name for blob in bucket.list_blobs() if "/" in blob.name]
 
             match = False
+            name = ""
 
-            # Iterate over blobs in the user's directory
-            for blob in bucket.list_blobs(prefix=user_folder):
-                # Download the known image from the bucket
-                known_image_data = blob.download_as_bytes()
+            # Iterate through each user's directory
+            for user_directory in user_directories:
+                user_directory = user_directory.rstrip("/")  # Remove trailing slashes
+                user_name = user_directory.split("/")[-1]  # Extract the user's name from the directory path
+
+                # Download the known image from the user's directory
+                known_image_blob = bucket.blob(f"{user_directory}/picture_{user_name}.jpg")
+                known_image_data = known_image_blob.download_as_bytes()
                 known_image_nparr = np.frombuffer(known_image_data, np.uint8)
                 known_image = cv2.imdecode(known_image_nparr, cv2.IMREAD_COLOR)
 
@@ -185,16 +186,18 @@ def compare_picture():
                 # Compare the images using the face recognition algorithm
                 if compare_faces(image, known_image):
                     match = True
+                    name = user_name
                     break
 
             if match:
-                return jsonify({"match": True, "user_name": user_name, "picture_name": picture_name})
+                return jsonify({"match": True, "name": name})
             else:
                 return jsonify({"match": False, "error": "No face detected."})
         else:
-            return jsonify({"error": "Invalid data received. Make sure you are sending user_name, picture_name, and picture as JSON."}), 400
+            return jsonify({"error": "Invalid picture data received."}), 400
     except Exception as e:
-        print("Error comparing the picture:", str(e))  # Log the specific error
+        print("Error comparing the picture:")
+        print(traceback.format_exc())
         return jsonify({"error": "Failed to compare the picture."}), 500
 
 
