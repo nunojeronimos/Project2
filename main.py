@@ -164,8 +164,8 @@ def compare_picture():
             client = storage.Client()
             bucket = client.bucket(bucket_name)
 
-            match = False
-            user_name = ""
+            best_match = None
+            best_match_distance = float('inf')
 
             for blob in bucket.list_blobs(prefix="user_"):  # Iterate through user directories
                 # Extract the user's name from the directory name
@@ -185,13 +185,16 @@ def compare_picture():
                 if known_image is None or known_image.size == 0:
                     continue
 
-                # Compare the images using the face recognition algorithm
-                if compare_faces(image, known_image):
-                    match = True
-                    break
+                # Compute the Euclidean distance between the face regions
+                distance = np.sqrt(np.sum((image - known_image) ** 2))
 
-            if match:
-                return jsonify({"match": True, "name": user_name})
+                # Update the best match if the current user is closer
+                if distance < best_match_distance:
+                    best_match_distance = distance
+                    best_match = user_name
+
+            if best_match is not None:
+                return jsonify({"match": True, "name": best_match})
             else:
                 return jsonify({"match": False, "error": "No face detected or no matching user."})
         else:
