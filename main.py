@@ -94,6 +94,10 @@ def save_picture():
             # Define the folder path for the user
             user_folder = f"user_{picture_name}"
 
+            # Create the folder for augmented images
+            augmented_images_folder = os.path.join(user_folder, "augmented_images")
+            os.makedirs(augmented_images_folder, exist_ok=True)
+
             # Save the picture to Google Cloud Storage
             bucket_name = "jeronimo2"  # Replace with your actual bucket name
             client = storage.Client()
