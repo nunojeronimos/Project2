@@ -3,6 +3,7 @@ import os
 import base64
 import numpy as np
 import io
+import traceback
 from flask import Flask, render_template, request, Response, jsonify
 from google.cloud import storage
 from google.auth import compute_engine
@@ -51,7 +52,12 @@ def compare_faces(image1, image2):
                 return True
 
     return False
-        
+
+def augment_image(image):
+    # Add random noise to the image (you can customize this or add more augmentations)
+    noisy_image = cv2.add(image, 25 * np.random.randn(*image.shape).astype(np.uint8))
+    return noisy_image
+
 @app.route("/try_again", methods=["POST"])
 def try_again():
     try:
@@ -77,8 +83,6 @@ def home():
 @app.route('/video_feed')
 def video_feed():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-import traceback
 
 @app.route("/save_picture", methods=["POST"])
 def save_picture():
@@ -107,10 +111,22 @@ def save_picture():
             augmented_images_blob = bucket.blob(f"{user_folder}/augmented_images/")
             augmented_images_blob.upload_from_string("")
 
-            # Upload the picture inside the user's folder
+            # Upload the original picture inside the user's folder
             picture_blob = bucket.blob(f"{user_folder}/{picture_name}.jpg")
             picture_blob.upload_from_string(image_data, content_type="image/jpeg")
 
+            # Load the original image for augmentation
+            nparr = np.frombuffer(image_data, np.uint8)
+            original_image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+            # Perform augmentation and save the augmented images
+            for i in range(5):  # Change the number of augmented images as needed
+                augmented_image = augment_image(original_image)
+
+                # Save the augmented image to "augmented_images" folder with a unique name
+                augmented_blob = bucket.blob(f"{user_folder}/augmented_images/{picture_name}_augmented_{i}.jpg")
+                augmented_blob.upload_from_string(cv2.imencode('.jpg', augmented_image)[1].tobytes(), content_type="image/jpeg")
+            
             return "Picture saved successfully!", 200
         else:
             return "Invalid picture data or picture name received.", 400
