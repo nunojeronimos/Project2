@@ -94,10 +94,6 @@ def save_picture():
             # Define the folder path for the user
             user_folder = f"user_{picture_name}"
 
-            # Create the folder for augmented images
-            augmented_images_folder = os.path.join(user_folder, "augmented_images")
-            os.makedirs(augmented_images_folder, exist_ok=True)
-
             # Save the picture to Google Cloud Storage
             bucket_name = "jeronimo2"  # Replace with your actual bucket name
             client = storage.Client()
@@ -106,6 +102,10 @@ def save_picture():
             # Create the user's folder if it doesn't exist
             user_blob = bucket.blob(user_folder + "/")
             user_blob.upload_from_string("")
+
+            # Create the augmented_images directory inside the user's folder
+            augmented_images_blob = bucket.blob(f"{user_folder}/augmented_images/")
+            augmented_images_blob.upload_from_string("")
 
             # Upload the picture inside the user's folder
             picture_blob = bucket.blob(f"{user_folder}/{picture_name}.jpg")
