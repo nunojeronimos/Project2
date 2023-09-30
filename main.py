@@ -61,8 +61,9 @@ def augment_image(image):
     M = cv2.getRotationMatrix2D((cols / 2, rows / 2), angle, 1)
     rotated_image = cv2.warpAffine(image, M, (cols, rows))
 
-    # Randomly adjust noisy 
-    noisy_image = cv2.add(image, 25 * np.random.randn(*image.shape).astype(np.uint8))
+    # Generate random noise and add it to the image
+    noise = np.random.randn(*image.shape).astype(np.uint8) * 25
+    noisy_image = cv2.add(rotated_image, noise)
 
     # Randomly adjust brightness
     brightness = random.uniform(0.7, 1.3)  # Adjust the range as needed
