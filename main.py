@@ -4,6 +4,7 @@ import base64
 import numpy as np
 import io
 import traceback
+import random
 from flask import Flask, render_template, request, Response, jsonify
 from google.cloud import storage
 from google.auth import compute_engine
@@ -54,9 +55,23 @@ def compare_faces(image1, image2):
     return False
 
 def augment_image(image):
-    # Add random noise to the image (you can customize this or add more augmentations)
-    noisy_image = cv2.add(image, 25 * np.random.randn(*image.shape).astype(np.uint8))
-    return noisy_image
+    # Create a copy of the original image to apply augmentations
+    augmented_image = image.copy()
+
+    # 1. Add random noise to the image
+    noisy_image = cv2.add(augmented_image, 25 * np.random.randn(*augmented_image.shape).astype(np.uint8))
+
+    # 2. Rotate the image by a random angle between -10 and 10 degrees
+    angle = random.uniform(-10, 10)
+    rows, cols, _ = augmented_image.shape
+    rotation_matrix = cv2.getRotationMatrix2D((cols / 2, rows / 2), angle, 1)
+    rotated_image = cv2.warpAffine(augmented_image, rotation_matrix, (cols, rows))
+
+    # 3. Adjust brightness by randomly scaling pixel values
+    brightness_scale = random.uniform(0.8, 1.2)
+    brightened_image = cv2.convertScaleAbs(rotated_image, alpha=brightness_scale, beta=0)
+
+    return brightened_image
 
 @app.route("/try_again", methods=["POST"])
 def try_again():
