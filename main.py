@@ -65,9 +65,10 @@ def augment_image(image):
     noise = np.random.randn(*image.shape).astype(np.uint8) * 25
     noisy_image = cv2.add(rotated_image, noise)
 
-    # Randomly adjust brightness
-    brightness = random.uniform(0.7, 1.3)  # Adjust the range as needed
-    augmented_image = cv2.convertScaleAbs(rotated_image, noisy_image, alpha=brightness, beta=0)
+    # Randomly adjust brightness and contrast
+    alpha = random.uniform(0.7, 1.3)  # Adjust the range as needed
+    beta = random.uniform(-30, 30)     # Adjust the range as needed
+    augmented_image = cv2.convertScaleAbs(noisy_image, alpha=alpha, beta=beta)
     return augmented_image
 
 
