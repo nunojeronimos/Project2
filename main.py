@@ -113,7 +113,7 @@ def save_picture():
             user_folder = f"user_{picture_name}"
 
             # Save the picture to Google Cloud Storage
-            bucket_name = "jeronimo2"  # Replace with your actual bucket name
+            bucket_name = "jeronimo3"  # Replace with your actual bucket name
             client = storage.Client()
             bucket = client.bucket(bucket_name)
 
