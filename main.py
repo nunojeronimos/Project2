@@ -157,7 +157,7 @@ def check_name():
 
         if picture_name:
             # Check if the name already exists in your database or storage
-            bucket_name = "jeronimo2"  # Replace with your actual bucket name
+            bucket_name = "jeronimo"  # Replace with your actual bucket name
             client = storage.Client()
             bucket = client.bucket(bucket_name)
 
@@ -194,7 +194,7 @@ def compare_picture():
                 return jsonify({"error": "Invalid image data received."}), 400
 
             # Compare the image with the pictures in the Google Cloud Storage bucket
-            bucket_name = "jeronimo2"  # Replace with your actual bucket name
+            bucket_name = "jeronimo"  # Replace with your actual bucket name
             client = storage.Client()
             bucket = client.bucket(bucket_name)
 
