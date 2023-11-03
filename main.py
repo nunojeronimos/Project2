@@ -113,7 +113,7 @@ def save_picture():
             user_folder = f"user_{picture_name}"
 
             # Save the picture to Google Cloud Storage
-            bucket_name = "jeronimo3"  # Replace with your actual bucket name
+            bucket_name = "jeronimo4"  # Replace with your actual bucket name
             client = storage.Client()
             bucket = client.bucket(bucket_name)
 
@@ -157,7 +157,7 @@ def check_name():
 
         if picture_name:
             # Check if the name already exists in your database or storage
-            bucket_name = "jeronimo3"  # Replace with your actual bucket name
+            bucket_name = "jeronimo4"  # Replace with your actual bucket name
             client = storage.Client()
             bucket = client.bucket(bucket_name)
 
@@ -194,7 +194,7 @@ def compare_picture():
                 return jsonify({"error": "Invalid image data received."}), 400
 
             # Compare the image with the pictures in the Google Cloud Storage bucket
-            bucket_name = "jeronimo3"  # Replace with your actual bucket name
+            bucket_name = "jeronimo4"  # Replace with your actual bucket name
             client = storage.Client()
             bucket = client.bucket(bucket_name)
 
