@@ -193,7 +193,7 @@ def compare_picture():
             if image is None or image.size == 0:
                 return jsonify({"error": "Invalid image data received."}), 400
 
-            # Compare the image with the pictures in the Google Cloud Storage bucket
+            # Compare the image with the augmented images in the Google Cloud Storage bucket
             bucket_name = "jeronimo4"  # Replace with your actual bucket name
             client = storage.Client()
             bucket = client.bucket(bucket_name)
@@ -205,27 +205,27 @@ def compare_picture():
                 # Extract the user's name from the directory name
                 user_name = blob.name.split("/")[0].replace("user_", "")
 
-                # Download the known image from the user's directory
-                known_image_data = blob.download_as_bytes()
+                # Download the augmented images from the user's directory
+                augmented_image_list = []
+                for augmented_blob in bucket.list_blobs(prefix=f"user_{user_name}/augmented_images/"):
+                    augmented_image_data = augmented_blob.download_as_bytes()
+                    if augmented_image_data:
+                        augmented_image_nparr = np.frombuffer(augmented_image_data, np.uint8)
+                        augmented_image = cv2.imdecode(augmented_image_nparr, cv2.IMREAD_COLOR)
+                        augmented_image_list.append(augmented_image)
 
-                # Check if the known_image_data is empty or invalid
-                if not known_image_data:
+                if not augmented_image_list:
                     continue
 
-                known_image_nparr = np.frombuffer(known_image_data, np.uint8)
-                known_image = cv2.imdecode(known_image_nparr, cv2.IMREAD_COLOR)
+                # Compare the image with each augmented image
+                for augmented_image in augmented_image_list:
+                    # Compute the Euclidean distance between the face regions
+                    distance = np.sqrt(np.sum((image - augmented_image) ** 2))
 
-                # Check if the known_image is valid and not empty
-                if known_image is None or known_image.size == 0:
-                    continue
-
-                # Compute the Euclidean distance between the face regions
-                distance = np.sqrt(np.sum((image - known_image) ** 2))
-
-                # Update the best match if the current user is closer
-                if distance < best_match_distance:
-                    best_match_distance = distance
-                    best_match = user_name
+                    # Update the best match if the current user is closer
+                    if distance < best_match_distance:
+                        best_match_distance = distance
+                        best_match = user_name
 
             if best_match is not None:
                 return jsonify({"match": True, "name": best_match})
@@ -237,6 +237,7 @@ def compare_picture():
         print("Error comparing the picture:")
         print(traceback.format_exc())
         return jsonify({"error": "Failed to compare the picture."}), 500
+
 
 
 
