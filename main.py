@@ -117,13 +117,15 @@ def save_picture():
             client = storage.Client()
             bucket = client.bucket(bucket_name)
 
-            # Create the user's folder if it doesn't exist
+            # Check if the user's folder exists, create it if not
             user_blob = bucket.blob(user_folder + "/")
-            user_blob.upload_from_string("")
+            if not user_blob.exists():
+                user_blob.upload_from_string("")
 
-            # Create the augmented_images directory inside the user's folder
+            # Check if the "augmented_images" directory exists inside the user's folder, create it if not
             augmented_images_blob = bucket.blob(f"{user_folder}/augmented_images/")
-            augmented_images_blob.upload_from_string("")
+            if not augmented_images_blob.exists():
+                augmented_images_blob.upload_from_string("")
 
             # Upload the original picture inside the user's folder
             picture_blob = bucket.blob(f"{user_folder}/{picture_name}.jpg")
@@ -137,10 +139,10 @@ def save_picture():
             for i in range(5):  # Change the number of augmented images as needed
                 augmented_image = augment_image(original_image)
 
-                # Save the augmented image to "augmented_images" folder with a unique name
+                # Save the augmented image to the "augmented_images" folder with a unique name
                 augmented_blob = bucket.blob(f"{user_folder}/augmented_images/{picture_name}_augmented_{i}.jpg")
                 augmented_blob.upload_from_string(cv2.imencode('.jpg', augmented_image)[1].tobytes(), content_type="image/jpeg")
-            
+
             return "Picture saved successfully!", 200
         else:
             return "Invalid picture data or picture name received.", 400
@@ -148,6 +150,7 @@ def save_picture():
         print("Error saving the picture:")
         print(traceback.format_exc())
         return "Failed to save the picture.", 500
+
     
 @app.route("/check_name", methods=["POST"])
 def check_name():
