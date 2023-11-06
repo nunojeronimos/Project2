@@ -223,9 +223,10 @@ def compare_picture():
                 distance = np.sqrt(np.sum((image - known_image) ** 2))
 
                 # Update the best match if the current user is closer
-                #if distance < best_match_distance:
-                 #   best_match_distance = distance
-                  #  best_match = user_name
+                if distance < best_match_distance:
+                    best_match_distance = distance
+                    best_match = user_name
+                    print('best match to see: ' + best_match)
 
                 # Compare the image with augmented images
                 for i in range(5):  # You have 5 augmented images per user, adjust as needed
@@ -242,10 +243,11 @@ def compare_picture():
                         # Update the best match if the augmented image is closer
                         if distance < best_match_distance:
                             best_match_distance = distance
-                            best_match = user_name    
+                            best_match = user_name
+                            print('best match no novo upadate: ' + best_match)    
 
             if best_match is not None:
-                print("best match aqui: "+best_match)
+                print('Best match: ' + best_match)
                 return jsonify({"match": True, "name": best_match})
             else:
                 return jsonify({"match": False, "error": "No face detected or no matching user."})
