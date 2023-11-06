@@ -117,15 +117,13 @@ def save_picture():
             client = storage.Client()
             bucket = client.bucket(bucket_name)
 
-            # Check if the user's folder exists, create it if not
+            # Create the user's folder if it doesn't exist
             user_blob = bucket.blob(user_folder + "/")
-            if not user_blob.exists():
-                user_blob.upload_from_string("")
+            user_blob.upload_from_string("")
 
-            # Check if the "augmented_images" directory exists inside the user's folder, create it if not
+            # Create the augmented_images directory inside the user's folder
             augmented_images_blob = bucket.blob(f"{user_folder}/augmented_images/")
-            if not augmented_images_blob.exists():
-                augmented_images_blob.upload_from_string("")
+            augmented_images_blob.upload_from_string("")
 
             # Upload the original picture inside the user's folder
             picture_blob = bucket.blob(f"{user_folder}/{picture_name}.jpg")
@@ -139,10 +137,10 @@ def save_picture():
             for i in range(5):  # Change the number of augmented images as needed
                 augmented_image = augment_image(original_image)
 
-                # Save the augmented image to the "augmented_images" folder with a unique name
+                # Save the augmented image to "augmented_images" folder with a unique name
                 augmented_blob = bucket.blob(f"{user_folder}/augmented_images/{picture_name}_augmented_{i}.jpg")
                 augmented_blob.upload_from_string(cv2.imencode('.jpg', augmented_image)[1].tobytes(), content_type="image/jpeg")
-
+            
             return "Picture saved successfully!", 200
         else:
             return "Invalid picture data or picture name received.", 400
@@ -150,7 +148,6 @@ def save_picture():
         print("Error saving the picture:")
         print(traceback.format_exc())
         return "Failed to save the picture.", 500
-
     
 @app.route("/check_name", methods=["POST"])
 def check_name():
@@ -196,7 +193,7 @@ def compare_picture():
             if image is None or image.size == 0:
                 return jsonify({"error": "Invalid image data received."}), 400
 
-            # Compare the image with the augmented images in the user's folder
+            # Compare the image with the pictures in the Google Cloud Storage bucket
             bucket_name = "jeronimo4"  # Replace with your actual bucket name
             client = storage.Client()
             bucket = client.bucket(bucket_name)
@@ -204,32 +201,31 @@ def compare_picture():
             best_match = None
             best_match_distance = float('inf')
 
-            for blob in bucket.list_blobs():  # Iterate through files in the bucket
-                # Extract the user's name and augmented image from the blob path
-                parts = blob.name.split("/")
-                if len(parts) == 3 and parts[2].startswith("augmented_images/"):
-                    user_name = parts[0].replace("user_", "")
-                    augmented_image_name = parts[2]
+            for blob in bucket.list_blobs(prefix="user_"):  # Iterate through user directories
+                # Extract the user's name from the directory name
+                user_name = blob.name.split("/")[0].replace("user_", "")
 
-                    # Download the augmented image
-                    augmented_image_data = blob.download_as_bytes()
-                    if not augmented_image_data:
-                        continue
+                # Download the known image from the user's directory
+                known_image_data = blob.download_as_bytes()
 
-                    augmented_image_nparr = np.frombuffer(augmented_image_data, np.uint8)
-                    augmented_image = cv2.imdecode(augmented_image_nparr, cv2.IMREAD_COLOR)
+                # Check if the known_image_data is empty or invalid
+                if not known_image_data:
+                    continue
 
-                    # Check if the augmented image is valid and not empty
-                    if augmented_image is None or augmented_image.size == 0:
-                        continue
+                known_image_nparr = np.frombuffer(known_image_data, np.uint8)
+                known_image = cv2.imdecode(known_image_nparr, cv2.IMREAD_COLOR)
 
-                    # Compute the Euclidean distance between the face regions
-                    distance = np.sqrt(np.sum((image - augmented_image) ** 2))
+                # Check if the known_image is valid and not empty
+                if known_image is None or known_image.size == 0:
+                    continue
 
-                    # Update the best match if the current user is closer
-                    if distance < best_match_distance:
-                        best_match_distance = distance
-                        best_match = user_name
+                # Compute the Euclidean distance between the face regions
+                distance = np.sqrt(np.sum((image - known_image) ** 2))
+
+                # Update the best match if the current user is closer
+                if distance < best_match_distance:
+                    best_match_distance = distance
+                    best_match = user_name
 
             if best_match is not None:
                 return jsonify({"match": True, "name": best_match})
