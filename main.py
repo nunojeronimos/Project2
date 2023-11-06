@@ -193,7 +193,7 @@ def compare_picture():
             if image is None or image.size == 0:
                 return jsonify({"error": "Invalid image data received."}), 400
 
-            # Compare the image with the augmented images in the Google Cloud Storage bucket
+            # Compare the image with the augmented images in the user's folder
             bucket_name = "jeronimo4"  # Replace with your actual bucket name
             client = storage.Client()
             bucket = client.bucket(bucket_name)
@@ -201,36 +201,32 @@ def compare_picture():
             best_match = None
             best_match_distance = float('inf')
 
-            for blob in bucket.list_blobs(prefix="user_"):  # Iterate through user directories
-                user_name = blob.name.split("/")[0].replace("user_", "")
+            for blob in bucket.list_blobs():  # Iterate through files in the bucket
+                # Extract the user's name and augmented image from the blob path
+                parts = blob.name.split("/")
+                if len(parts) == 3 and parts[2].startswith("augmented_images/"):
+                    user_name = parts[0].replace("user_", "")
+                    augmented_image_name = parts[2]
 
-                # Check if the user has augmented images
-                augmented_images_folder = f"{user_name}/augmented_images/"
-                augmented_blobs = list(bucket.list_blobs(prefix=augmented_images_folder))
+                    # Download the augmented image
+                    augmented_image_data = blob.download_as_bytes()
+                    if not augmented_image_data:
+                        continue
 
-                if augmented_blobs:
-                    for augmented_blob in augmented_blobs:
-                        augmented_image_data = augmented_blob.download_as_bytes()
+                    augmented_image_nparr = np.frombuffer(augmented_image_data, np.uint8)
+                    augmented_image = cv2.imdecode(augmented_image_nparr, cv2.IMREAD_COLOR)
 
-                        # Check if the augmented_image_data is empty or invalid
-                        if not augmented_image_data:
-                            continue
+                    # Check if the augmented image is valid and not empty
+                    if augmented_image is None or augmented_image.size == 0:
+                        continue
 
-                        augmented_image_nparr = np.frombuffer(augmented_image_data, np.uint8)
-                        augmented_image = cv2.imdecode(augmented_image_nparr, cv2.IMREAD_COLOR)
+                    # Compute the Euclidean distance between the face regions
+                    distance = np.sqrt(np.sum((image - augmented_image) ** 2))
 
-                        # Check if the augmented_image is valid and not empty
-                        if augmented_image is None or augmented_image.size == 0:
-                            continue
-
-                        # Compute the Euclidean distance between the face regions of the augmented image
-                        # and the incoming image
-                        distance = np.sqrt(np.sum((image - augmented_image) ** 2))
-
-                        # Update the best match if the current user is closer
-                        if distance < best_match_distance:
-                            best_match_distance = distance
-                            best_match = user_name
+                    # Update the best match if the current user is closer
+                    if distance < best_match_distance:
+                        best_match_distance = distance
+                        best_match = user_name
 
             if best_match is not None:
                 return jsonify({"match": True, "name": best_match})
@@ -242,7 +238,6 @@ def compare_picture():
         print("Error comparing the picture:")
         print(traceback.format_exc())
         return jsonify({"error": "Failed to compare the picture."}), 500
-
 
 
 
