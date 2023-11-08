@@ -170,7 +170,10 @@ function Login() {
     .then(function (data) {
       if (data.match) {
         alert("Welcome, " + data.name + "!");
-        window.location.href = `/profile?name=${data.name}`;
+        // Use setTimeout to ensure the alert is closed before redirecting
+        setTimeout(function () {
+          window.location.href = `/profile?name=${data.name}`;
+        }, 1000);
       } else {
         alert("No match found.");
       }
