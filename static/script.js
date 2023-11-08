@@ -170,7 +170,7 @@ function Login() {
     .then(function (data) {
       if (data.match) {
         //alert("Welcome, " + data.name + "!");
-        window.location.href = `/profile`;
+        window.location.href = `/profile?name=${data.name}`;
       } else {
         alert("No match found.");
       }
