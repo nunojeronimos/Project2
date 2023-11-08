@@ -5,7 +5,7 @@ import numpy as np
 import io
 import traceback
 import random
-from flask import Flask, render_template, request, Response, jsonify
+from flask import Flask, render_template, request, Response, jsonify, render_template_string
 from google.cloud import storage
 from google.auth import compute_engine
 
@@ -238,6 +238,10 @@ def compare_picture():
         print(traceback.format_exc())
         return jsonify({"error": "Failed to compare the picture."}), 500
 
+@app.route("/profile")
+def profile():
+    user_name = request.args.get("name")
+    return render_template_string("profile.html", user_name=user_name)
 
 
 if __name__ == '__main__':
