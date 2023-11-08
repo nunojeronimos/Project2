@@ -169,11 +169,10 @@ function Login() {
     })
     .then(function (data) {
       if (data.match) {
-        alert("Welcome, " + data.name + "!");
-        // Use setTimeout to ensure the alert is closed before redirecting
-        setTimeout(function () {
-          window.location.href = `/profile?name=${data.name}`;
-        }, 1000);
+        console.log("Welcome, " + data.name + "!");
+        print("Welcome, " + data.name + "!!!!");
+        println("Weledededededcome, " + data.name + "!!!!");
+        window.location.href = `/profile?name=${data.name}`;
       } else {
         alert("No match found.");
       }
