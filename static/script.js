@@ -169,10 +169,8 @@ function Login() {
     })
     .then(function (data) {
       if (data.match) {
-        console.log("Welcome, " + data.name + "!");
-        print("Welcome, " + data.name + "!!!!");
-        println("Weledededededcome, " + data.name + "!!!!");
-        window.location.href = `/profile?name=${data.name}`;
+        //alert("Welcome, " + data.name + "!");
+        window.location.href = `/profile`;
       } else {
         alert("No match found.");
       }
