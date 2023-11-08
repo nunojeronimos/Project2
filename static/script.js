@@ -169,7 +169,7 @@ function Login() {
     })
     .then(function (data) {
       if (data.match) {
-        //alert("Welcome, " + data.name + "!");
+        alert("ehehehe, " + data.name + "!");
         window.location.href = `/profile?name=${data.name}`;
       } else {
         alert("No match found.");
