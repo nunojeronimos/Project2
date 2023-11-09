@@ -171,6 +171,7 @@ function Login() {
       if (data.match) {
         //alert("ehehehe, " + data.name + "!");
         window.location.href = `/profile?name=${data.name}`;
+        console.log(data.name);
       } else {
         alert("No match found.");
       }
