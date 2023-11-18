@@ -1,18 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link
       rel="stylesheet"
       type="text/css"
-      href="{{ url_for('static', filename='styles.css') }}"
+      href="{{ url_for('static', filename='profile.css') }}"
     />
     <title>User Profile</title>
   </head>
   <body>
+    <nav>
+      <ul class="navbar">
+        <li class="welcome-message">Welcome, {{ user_name }}</li>
+        <li><a href="#">Meeting</a></li>
+        <li><a href="#">Votation</a></li>
+        <li><a href="#">Home</a></li>
+      </ul>
+    </nav>
     <h1>User Profile</h1>
     <div id="user_profile"></div>
-    <p>Welcome, {{ user_name }}</p>
     <!-- Add more content as needed for the user profile -->
   </body>
 </html>
