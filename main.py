@@ -240,7 +240,8 @@ def compare_picture():
 
 @app.route("/profile")
 def profile():
-    return render_template("profile.html")
-
+    user_name = request.args.get("name")
+    return render_template("profile.html", user_name=user_name)
+    
 if __name__ == '__main__':
     app.run(debug=True)
