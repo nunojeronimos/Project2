@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link
       rel="stylesheet"
+      type="text/css"
       href="{{ url_for('static', filename='styles.css') }}"
     />
     <title>User Profile</title>
   </head>
   <body>
-    <h1>Welcome to Your Profile</h1>
-    <p>This is the profile page for {{ user_name }}.</p>
-    <!-- You can customize this page further based on your needs -->
+    <h1>User Profile</h1>
+    <p>Welcome, {{ user_name }}!</p>
+    <!-- Add more content as needed for the user profile -->
   </body>
 </html>
