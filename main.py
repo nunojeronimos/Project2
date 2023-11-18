@@ -238,7 +238,9 @@ def compare_picture():
         print(traceback.format_exc())
         return jsonify({"error": "Failed to compare the picture."}), 500
 
-
+@app.route("/profile")
+def profile():
+    return render_template("profile.html")
 
 if __name__ == '__main__':
     app.run(debug=True)
