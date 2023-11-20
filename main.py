@@ -242,6 +242,16 @@ def compare_picture():
 def profile():
     user_name = request.args.get("name")
     return render_template("profile.html", user_name=user_name)
-    
+
+@app.route("/meetings")
+def meetings():
+    user_name = request.args.get("name")
+    return render_template("meetings.html", user_name=user_name)
+
+@app.route("/votation")
+def votation():
+    user_name = request.args.get("name")
+    return render_template("votation.html", user_name=user_name)    
+
 if __name__ == '__main__':
     app.run(debug=True)

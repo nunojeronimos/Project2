@@ -12,6 +12,18 @@ document.addEventListener("DOMContentLoaded", function () {
   for (var i = 0; i < closeButtons.length; i++) {
     closeButtons[i].addEventListener("click", closePopup);
   }
+
+  var meetingLink = document.getElementById("meeting_link");
+  meetingLink.addEventListener("click", function (event) {
+    event.preventDefault(); // Prevent the default behavior of the anchor tag
+    loadMeetingsPage(); // Implement a function to load meetings dynamically
+  });
+
+  var votationLink = document.getElementById("meeting_link");
+  votationLink.addEventListener("click", function (event) {
+    event.preventDefault(); // Prevent the default behavior of the anchor tag
+    loadVotationPage(); // Implement a function to load meetings dynamically
+  });
 });
 
 function openRegisterPopup() {
@@ -179,4 +191,18 @@ function Login() {
       alert("An error occurred while comparing the picture.");
       console.error("Error:", error);
     });
+}
+
+function loadMeetingsPage() {
+  // Use AJAX or other methods to load content dynamically
+  // You can use fetch or other libraries to fetch the content and update the DOM
+  // For simplicity, you can redirect to the meetings page directly
+  window.location.href = "/meatings";
+}
+
+function loadVotationPage() {
+  // Use AJAX or other methods to load content dynamically
+  // You can use fetch or other libraries to fetch the content and update the DOM
+  // For simplicity, you can redirect to the meetings page directly
+  window.location.href = "/votation";
 }
