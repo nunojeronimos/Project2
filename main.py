@@ -180,6 +180,7 @@ def compare_picture():
     try:
         data = request.json
         picture_data = data.get("picture")
+        picture_name = data.get("name")
 
         if picture_data:
             # Decode the base64 image data
@@ -226,6 +227,23 @@ def compare_picture():
                 if distance < best_match_distance:
                     best_match_distance = distance
                     best_match = user_name
+                
+                # Check augmented images as well
+                for i in range(5):  # Change the number of augmented images as needed
+                    augmented_blob = bucket.blob(f"{user_name}/augmented_images/{picture_name}_augmented_{i}.jpg")
+                    augmented_image_data = augmented_blob.download_as_bytes()
+
+                    if augmented_image_data:
+                        augmented_image_nparr = np.frombuffer(augmented_image_data, np.uint8)
+                        augmented_image = cv2.imdecode(augmented_image_nparr, cv2.IMREAD_COLOR)
+
+                        # Compute the Euclidean distance between the face regions for augmented images
+                        augmented_distance = np.sqrt(np.sum((image - augmented_image) ** 2))
+
+                        # Update the best match if the current augmented image is closer
+                        if augmented_distance < best_match_distance:
+                            best_match_distance = augmented_distance
+                            best_match = user_name
 
             if best_match is not None:
                 return jsonify({"match": True, "name": best_match})
