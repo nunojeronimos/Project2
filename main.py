@@ -193,31 +193,24 @@ def compare_picture():
             if image is None or image.size == 0:
                 return jsonify({"error": "Invalid image data received."}), 400
 
-            # Retrieve the user's folder and load augmented images
-            user_name = request.args.get("name")
-
-            if user_name is None:
-                return jsonify({"error": "User name not provided."}), 400
-
-            user_folder = "user_" + user_name
+            # Compare the image with the pictures in the Google Cloud Storage bucket
             bucket_name = "jeronimo4"  # Replace with your actual bucket name
             client = storage.Client()
             bucket = client.bucket(bucket_name)
 
-            augmented_images = []
-            augmented_blob = bucket.blob(f"{user_folder}/augmented_images/")
-            for blob in bucket.list_blobs(prefix=f"{user_folder}/augmented_images/"):
-                augmented_data = blob.download_as_bytes()
-                augmented_nparr = np.frombuffer(augmented_data, np.uint8)
-                augmented_image = cv2.imdecode(augmented_nparr, cv2.IMREAD_COLOR)
-                augmented_images.append(augmented_image)
-
-            # Perform face comparison considering augmented images
             best_match = None
             best_match_distance = float('inf')
 
-            for blob in bucket.list_blobs(prefix=f"{user_folder}/"):  # Iterate through user images
+            for blob in bucket.list_blobs(prefix="user_"):  # Iterate through user directories
+                # Extract the user's name from the directory name
+                user_name = blob.name.split("/")[0].replace("user_", "")
+
+                # Download the known image from the user's directory
                 known_image_data = blob.download_as_bytes()
+
+                # Check if the known_image_data is empty or invalid
+                if not known_image_data:
+                    continue
 
                 known_image_nparr = np.frombuffer(known_image_data, np.uint8)
                 known_image = cv2.imdecode(known_image_nparr, cv2.IMREAD_COLOR)
@@ -232,7 +225,7 @@ def compare_picture():
                 # Update the best match if the current user is closer
                 if distance < best_match_distance:
                     best_match_distance = distance
-                    best_match = blob.name.split("/")[-1].split(".")[0]
+                    best_match = user_name
 
             if best_match is not None:
                 return jsonify({"match": True, "name": best_match})
@@ -244,7 +237,6 @@ def compare_picture():
         print("Error comparing the picture:")
         print(traceback.format_exc())
         return jsonify({"error": "Failed to compare the picture."}), 500
-
 
 @app.route("/profile")
 def profile():
