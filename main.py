@@ -194,7 +194,12 @@ def compare_picture():
                 return jsonify({"error": "Invalid image data received."}), 400
 
             # Retrieve the user's folder and load augmented images
-            user_folder = "user_" + request.args.get("name")
+            user_name = request.args.get("name")
+
+            if user_name is None:
+                return jsonify({"error": "User name not provided."}), 400
+
+            user_folder = "user_" + user_name
             bucket_name = "jeronimo4"  # Replace with your actual bucket name
             client = storage.Client()
             bucket = client.bucket(bucket_name)
