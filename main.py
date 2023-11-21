@@ -204,7 +204,7 @@ def compare_picture():
 
             for blob in bucket.list_blobs(prefix="user_"):  # Iterate through user directories
                 # Extract the user's name from the directory name
-                user_name = blob.name.split("/")[0].replace("user_", "")
+                user_name = blob.name.split("/")[0].split("_")[1]
 
                 # Download the known image from the user's directory
                 known_image_data = blob.download_as_bytes()
