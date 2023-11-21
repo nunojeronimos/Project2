@@ -180,6 +180,7 @@ def compare_picture():
     try:
         data = request.json
         picture_data = data.get("picture")
+        picture_name = data.get("name")
 
         if picture_data:
             # Decode the base64 image data
@@ -229,7 +230,7 @@ def compare_picture():
                 
                 # Check augmented images as well
                 for i in range(5):  # Change the number of augmented images as needed
-                    augmented_blob = bucket.blob(f"{user_name}/augmented_images/{user_name}_augmented_{i}.jpg")
+                    augmented_blob = bucket.blob(f"{user_name}/augmented_images/{picture_name}_augmented_{i}.jpg")
                     augmented_image_data = augmented_blob.download_as_bytes()
 
                     if augmented_image_data:
