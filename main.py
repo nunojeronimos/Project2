@@ -193,7 +193,9 @@ def compare_picture():
         if picture_data:
             # Decode the base64 image data
             image_data = base64.b64decode(picture_data.split(",")[1])
-
+            cv2.imwrite("detected_face.jpg", image)
+            print("Image Shape:", image.shape)
+            
             # Convert the image data to a NumPy array
             nparr = np.frombuffer(image_data, np.uint8)
             image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
