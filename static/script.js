@@ -151,6 +151,7 @@ function Login() {
 
   // Convert the data URL to a base64-encoded string
   var dataURL = picturePreview.src;
+  console.log("Image data:", dataURL);
 
   fetch("/compare_picture", {
     method: "POST",

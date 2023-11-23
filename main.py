@@ -253,8 +253,10 @@ def compare_picture():
                     break
 
             if best_match is not None:
+                print(f"Best match found: {best_match}")
                 return jsonify({"match": True, "name": best_match})
             else:
+                print("No match found.")
                 return jsonify({"match": False, "error": "No face detected or no matching user."})
         else:
             return jsonify({"error": "Invalid picture data received."}), 400
