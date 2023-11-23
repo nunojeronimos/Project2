@@ -59,8 +59,12 @@ def compare_faces(image, images):
 
                 # If the distance is below a certain threshold, consider it a match
                 if distance < 200:
+                    print(f"Match found with distance: {distance}")
                     return True
+                else:
+                    print(f"No match with distance: {distance}")
 
+    print("No match found.")
     return False
 
 def augment_image(image):
