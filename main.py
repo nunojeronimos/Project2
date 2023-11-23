@@ -214,7 +214,17 @@ def compare_picture():
                 user_name = blob.name.split("/")[0].replace("user_", "")
 
                 # Download the known images (original and augmented) from the user's directory
-                original_image_data = bucket.blob(f"{user_name}/{user_name}.jpg").download_as_bytes()
+                original_blob = bucket.blob(f"{user_name}/{user_name}.jpg")
+                augmented_blobs = [
+                    bucket.blob(f"{user_name}/augmented_images/{user_name}_augmented_{i}.jpg") for i in range(5)
+                ]
+
+                # Check if the objects exist before attempting to download
+                if not original_blob.exists() or any(not blob.exists() for blob in augmented_blobs):
+                    continue
+
+                original_image_data = original_blob.download_as_bytes()
+                augmented_images = [cv2.imdecode(np.frombuffer(blob.download_as_bytes(), np.uint8), cv2.IMREAD_COLOR) for blob in augmented_blobs]
 
                 augmented_images = []
                 for i in range(5):  # Change the number of augmented images as needed
@@ -242,8 +252,10 @@ def compare_picture():
                 return jsonify({"match": False, "error": "No face detected or no matching user."})
         else:
             return jsonify({"error": "Invalid picture data received."}), 400
+            
     except Exception as e:
         print("Error comparing the picture:")
+        print(f"Error downloading images for user {user_name}: {e}")
         print(traceback.format_exc())
         return jsonify({"error": "Failed to compare the picture."}), 500
 
