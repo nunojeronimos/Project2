@@ -33,6 +33,7 @@ def generate_frames():
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 def compare_faces(image, images):
+    print("Im inside compare_faces function")
     # Convert images to grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
@@ -40,6 +41,7 @@ def compare_faces(image, images):
     for (x, y, w, h) in face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30)):
         # Extract the face region from the input image
         face_region = gray[y:y+h, x:x+w]
+        print("Im inside the first for on compare_faces function")
 
         # Iterate over the list of images (original and augmented)
         for img in images:
@@ -48,6 +50,7 @@ def compare_faces(image, images):
 
             # Detect faces in the image
             faces = face_cascade.detectMultiScale(img_gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+            print("Im inside the second for on compare_faces function")
 
             # Iterate over the detected faces in the image
             for (x_, y_, w_, h_) in faces:
@@ -56,9 +59,10 @@ def compare_faces(image, images):
 
                 # Compute the Euclidean distance between the face regions
                 distance = np.sqrt(np.sum((face_region - img_face_region) ** 2))
+                print("Im inside the third for on compare_faces function")
 
                 # If the distance is below a certain threshold, consider it a match
-                if distance < 200:
+                if distance < 150:
                     print(f"Match found with distance: {distance}")
                     return True
                 else:
@@ -210,7 +214,7 @@ def compare_picture():
                 return jsonify({"error": "Invalid image data received."}), 400
 
             faces = face_cascade.detectMultiScale(image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-            print(f"Number of faces detected kakaka: {len(faces)}")
+            print(f"Number of faces detected: {len(faces)}")
 
             # Print the details of each detected face
             for i, (x, y, w, h) in enumerate(faces):
