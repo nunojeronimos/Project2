@@ -210,7 +210,15 @@ def compare_picture():
                 return jsonify({"error": "Invalid image data received."}), 400
 
             faces = face_cascade.detectMultiScale(image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-            print(f"Number of faces detected: {len(faces)}")
+            print(f"Number of faces detected kakaka: {len(faces)}")
+
+            # Print the details of each detected face
+            for i, (x, y, w, h) in enumerate(faces):
+                print(f"Face {i + 1}: x={x}, y={y}, w={w}, h={h}")
+
+            # Check if there are no faces detected
+            if len(faces) == 0:
+                return jsonify({"error": "No face detected in the image."}), 400
 
             # Compare the image with the pictures in the Google Cloud Storage bucket
             bucket_name = "jeronimo4"  # Replace with your actual bucket name
