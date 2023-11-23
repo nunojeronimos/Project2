@@ -60,6 +60,7 @@ def compare_faces(image, images):
                 # Compute the Euclidean distance between the face regions
                 distance = np.sqrt(np.sum((face_region - img_face_region) ** 2))
                 print("Im inside the third for on compare_faces function")
+                print(f"Distance: {distance}")
 
                 # If the distance is below a certain threshold, consider it a match
                 if distance < 150:
@@ -68,7 +69,7 @@ def compare_faces(image, images):
                 else:
                     print(f"No match with distance: {distance}")
 
-    print("No match found.")
+    print("No match found 23.")
     return False
 
 def augment_image(image):
