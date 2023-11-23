@@ -181,7 +181,7 @@ function Login() {
     })
     .then(function (data) {
       if (data.match) {
-        alert("ehehe, " + data.name + "!");
+        alert("champions, " + data.name + "!");
         window.location.href = `/profile?name=${data.name}`;
       } else {
         alert("No match found.");
