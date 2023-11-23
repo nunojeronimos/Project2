@@ -298,7 +298,14 @@ def meetings():
 @app.route("/votation")
 def votation():
     user_name = request.args.get("name")
-    return render_template("votation.html", user_name=user_name)    
+    return render_template("votation.html", user_name=user_name) 
+
+@app.route('/captured_image')
+def captured_image():
+    _, frame = camera.read()
+    _, buffer = cv2.imencode('.jpg', frame)
+    frame = buffer.tobytes()
+    return Response(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n', mimetype='multipart/x-mixed-replace; boundary=frame')   
 
 if __name__ == '__main__':
     app.run(debug=True)
