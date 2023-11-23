@@ -58,7 +58,7 @@ def compare_faces(image, images):
                 distance = np.sqrt(np.sum((face_region - img_face_region) ** 2))
 
                 # If the distance is below a certain threshold, consider it a match
-                if distance < 50:
+                if distance < 100:
                     return True
 
     return False
@@ -204,6 +204,9 @@ def compare_picture():
             # Check if the image is valid and not empty
             if image is None or image.size == 0:
                 return jsonify({"error": "Invalid image data received."}), 400
+
+            faces = face_cascade.detectMultiScale(image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+            print(f"Number of faces detected: {len(faces)}")
 
             # Compare the image with the pictures in the Google Cloud Storage bucket
             bucket_name = "jeronimo4"  # Replace with your actual bucket name
