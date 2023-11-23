@@ -32,34 +32,25 @@ def generate_frames():
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-def compare_faces(image, images):
+def compare_faces(image1, image2):
     # Convert images to grayscale
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    gray1 = cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY)
+    gray2 = cv2.cvtColor(image2, cv2.COLOR_BGR2GRAY)
 
-    # Iterate over the detected faces in the input image
-    for (x, y, w, h) in face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30)):
-        # Extract the face region from the input image
-        face_region = gray[y:y+h, x:x+w]
+    # Detect faces in the images
+    faces1 = face_cascade.detectMultiScale(gray1, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+    faces2 = face_cascade.detectMultiScale(gray2, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
-        # Iterate over the list of images (original and augmented)
-        for img in images:
-            # Convert the image to grayscale
-            img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # Iterate over the detected faces in image1
+    for (x1, y1, w1, h1) in faces1:
+        # Iterate over the detected faces in image2
+        for (x2, y2, w2, h2) in faces2:
+            # Compute the Euclidean distance between the face regions
+            distance = np.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
-            # Detect faces in the image
-            faces = face_cascade.detectMultiScale(img_gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-
-            # Iterate over the detected faces in the image
-            for (x_, y_, w_, h_) in faces:
-                # Extract the face region from the image
-                img_face_region = img_gray[y_:y_+h_, x_:x_+w_]
-
-                # Compute the Euclidean distance between the face regions
-                distance = np.sqrt(np.sum((face_region - img_face_region) ** 2))
-
-                # If the distance is below a certain threshold, consider it a match
-                if distance < 100:
-                    return True
+            # If the distance is below a certain threshold, consider it a match
+            if distance < 50:
+                return True
 
     return False
 
@@ -186,7 +177,6 @@ def check_name():
 
 @app.route("/compare_picture", methods=["POST"])
 def compare_picture():
-    user_name = None
     try:
         data = request.json
         picture_data = data.get("picture")
@@ -198,15 +188,10 @@ def compare_picture():
             # Convert the image data to a NumPy array
             nparr = np.frombuffer(image_data, np.uint8)
             image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-            cv2.imwrite("detected_face.jpg", image)
-            print("Image Shape:", image.shape)
 
             # Check if the image is valid and not empty
             if image is None or image.size == 0:
                 return jsonify({"error": "Invalid image data received."}), 400
-
-            faces = face_cascade.detectMultiScale(image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-            print(f"Number of faces detected: {len(faces)}")
 
             # Compare the image with the pictures in the Google Cloud Storage bucket
             bucket_name = "jeronimo4"  # Replace with your actual bucket name
@@ -214,43 +199,33 @@ def compare_picture():
             bucket = client.bucket(bucket_name)
 
             best_match = None
+            best_match_distance = float('inf')
 
             for blob in bucket.list_blobs(prefix="user_"):  # Iterate through user directories
                 # Extract the user's name from the directory name
                 user_name = blob.name.split("/")[0].replace("user_", "")
 
-                # Download the known images (original and augmented) from the user's directory
-                original_blob = bucket.blob(f"{user_name}/{user_name}.jpg")
-                augmented_blobs = [
-                    bucket.blob(f"{user_name}/augmented_images/{user_name}_augmented_{i}.jpg") for i in range(5)
-                ]
+                # Download the known image from the user's directory
+                known_image_data = blob.download_as_bytes()
 
-                # Check if the objects exist before attempting to download
-                if not original_blob.exists() or any(not blob.exists() for blob in augmented_blobs):
+                # Check if the known_image_data is empty or invalid
+                if not known_image_data:
                     continue
 
-                original_image_data = original_blob.download_as_bytes()
-                augmented_images = [cv2.imdecode(np.frombuffer(blob.download_as_bytes(), np.uint8), cv2.IMREAD_COLOR) for blob in augmented_blobs]
+                known_image_nparr = np.frombuffer(known_image_data, np.uint8)
+                known_image = cv2.imdecode(known_image_nparr, cv2.IMREAD_COLOR)
 
-                augmented_images = []
-                for i in range(5):  # Change the number of augmented images as needed
-                    augmented_image_data = bucket.blob(f"{user_name}/augmented_images/{user_name}_augmented_{i}.jpg").download_as_bytes()
-                    augmented_images.append(cv2.imdecode(np.frombuffer(augmented_image_data, np.uint8), cv2.IMREAD_COLOR))
-
-                # Check if the original_image_data is empty or invalid
-                if not original_image_data:
+                # Check if the known_image is valid and not empty
+                if known_image is None or known_image.size == 0:
                     continue
 
-                original_image = cv2.imdecode(np.frombuffer(original_image_data, np.uint8), cv2.IMREAD_COLOR)
+                # Compute the Euclidean distance between the face regions
+                distance = np.sqrt(np.sum((image - known_image) ** 2))
 
-                # Check if the original_image is valid and not empty
-                if original_image is None or original_image.size == 0:
-                    continue
-
-                # Use compare_faces function to check for a match
-                if compare_faces(image, [original_image] + augmented_images):
+                # Update the best match if the current user is closer
+                if distance < best_match_distance:
+                    best_match_distance = distance
                     best_match = user_name
-                    break
 
             if best_match is not None:
                 return jsonify({"match": True, "name": best_match})
@@ -258,13 +233,10 @@ def compare_picture():
                 return jsonify({"match": False, "error": "No face detected or no matching user."})
         else:
             return jsonify({"error": "Invalid picture data received."}), 400
-            
     except Exception as e:
         print("Error comparing the picture:")
-        print(f"Error downloading images for user {user_name}: {e}")
         print(traceback.format_exc())
         return jsonify({"error": "Failed to compare the picture."}), 500
-
 
 @app.route("/profile")
 def profile():
