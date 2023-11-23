@@ -58,7 +58,7 @@ def compare_faces(image, images):
                 distance = np.sqrt(np.sum((face_region - img_face_region) ** 2))
 
                 # If the distance is below a certain threshold, consider it a match
-                if distance < 150:
+                if distance < 200:
                     return True
 
     return False
