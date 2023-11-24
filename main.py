@@ -246,9 +246,10 @@ def compare_picture():
                     continue
 
                 original_image_data = original_blob.download_as_bytes()
-                print("Original Image Shape:", original_image.shape)
-                
-                augmented_images = [cv2.imdecode(np.frombuffer(blob.download_as_bytes(), np.uint8), cv2.IMREAD_COLOR) for blob in augmented_blobs]
+                print("Original Image Shape:", original_image_data.shape)
+
+                augmented_images_data = [bucket.blob(f"{user_name}/augmented_images/{user_name}_augmented_{i}.jpg").download_as_bytes() for i in range(5)]
+                augmented_images = [cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR) for data in augmented_images_data]
                 print("Augmented Image Shapes:", [img.shape for img in augmented_images])
 
                 augmented_images = []
