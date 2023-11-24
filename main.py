@@ -246,17 +246,27 @@ def compare_picture():
                     continue
 
                 original_image_data = original_blob.download_as_bytes()
-                print("Original Image Shape:", original_image_data.shape)
+                print("Original Image Shape:", len(original_image_data))  # Check the length of the downloaded data
+
+                if len(original_image_data) > 0:
+                    original_image = cv2.imdecode(np.frombuffer(original_image_data, np.uint8), cv2.IMREAD_COLOR)
+                    print("Original Image Shape:", original_image.shape)
+                else:
+                    print("Error: Failed to decode original image data.")
 
                 augmented_images_data = [bucket.blob(f"{user_name}/augmented_images/{user_name}_augmented_{i}.jpg").download_as_bytes() for i in range(5)]
-                augmented_images = [cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR) for data in augmented_images_data]
-                print("Augmented Image Shapes:", [img.shape for img in augmented_images])
 
                 augmented_images = []
                 for i in range(5):  # Change the number of augmented images as needed
-                    augmented_image_data = bucket.blob(f"{user_name}/augmented_images/{user_name}_augmented_{i}.jpg").download_as_bytes()
-                    augmented_images.append(cv2.imdecode(np.frombuffer(augmented_image_data, np.uint8), cv2.IMREAD_COLOR))
-
+                    if len(augmented_images_data[i]) > 0:
+                        augmented_image = cv2.imdecode(np.frombuffer(augmented_images_data[i], np.uint8), cv2.IMREAD_COLOR)
+                        augmented_images.append(augmented_image)
+                        print(f"Augmented Image {i + 1} Shape:", augmented_image.shape)
+                    else:
+                        print(f"Error: Failed to decode augmented image {i + 1} data.")
+                
+                print("Augmented Image Shapes:", [img.shape for img in augmented_images])
+                
                 # Check if the original_image_data is empty or invalid
                 if not original_image_data:
                     continue
