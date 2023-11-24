@@ -41,7 +41,7 @@ def compare_faces(image, images):
     for (x, y, w, h) in face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30)):
         # Extract the face region from the input image
         face_region = gray[y:y+h, x:x+w]
-        print("Im inside the first for on compare_faces function")
+        print(f"Detected Face in Input Image: x={x}, y={y}, w={w}, h={h}")
 
         # Iterate over the list of images (original and augmented)
         for img in images:
@@ -56,10 +56,9 @@ def compare_faces(image, images):
             for (x_, y_, w_, h_) in faces:
                 # Extract the face region from the image
                 img_face_region = img_gray[y_:y_+h_, x_:x_+w_]
-
+                print(f"Detected Face in Augmented Image: x={x_}, y={y_}, w={w_}, h={h_}")
                 # Compute the Euclidean distance between the face regions
                 distance = np.sqrt(np.sum((face_region - img_face_region) ** 2))
-                print("Im inside the third for on compare_faces function")
                 print(f"Distance: {distance}")
 
                 # If the distance is below a certain threshold, consider it a match
@@ -219,7 +218,7 @@ def compare_picture():
 
             # Print the details of each detected face
             for i, (x, y, w, h) in enumerate(faces):
-                print(f"Face {i + 1}: x={x}, y={y}, w={w}, h={h}")
+                print(f"Detected Face {i + 1}: x={x}, y={y}, w={w}, h={h}")
 
             # Check if there are no faces detected
             if len(faces) == 0:
