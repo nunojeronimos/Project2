@@ -234,9 +234,8 @@ def compare_picture():
                 print(f"Number of blobs in augmented_images folder: {len(list(augmented_folder_blobs))}")
                
                 for augmented_blob in augmented_folder_blobs:  # Iterate through augmented images
-                    print("Inside the loop")
+                    print("Blob Name:", augmented_blob.name)
                     augmented_image_data = augmented_blob.download_as_bytes()
-                    print("Inside the for aug_loop")
 
                     if not augmented_image_data:
                         continue
