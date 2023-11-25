@@ -250,7 +250,7 @@ def compare_picture():
                     if distance_augmented < best_match_distance:
                         best_match_distance = distance_augmented
                         best_match = user_name
-                        print('Best mach in original: ' + str(distance_augmented))
+                        print('Best mach in aug_data: ' + str(distance_augmented))
 
             if best_match is not None:
                 return jsonify({"match": True, "name": best_match})
