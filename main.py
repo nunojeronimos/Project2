@@ -232,9 +232,10 @@ def compare_picture():
                 augmented_folder_blobs = []
                 augmented_folder_prefix = f"{blob.name}/augmented_images/"
                 augmented_blob = bucket.get_blob(augmented_folder_prefix)
-                print("teste " + blob.name)
+                print("Folder Prefix: " + augmented_folder_prefix)
 
                 if augmented_blob:
+                    print(f"Blob Name: {augmented_blob.name}")
                     augmented_folder_blobs = list(bucket.list_blobs(prefix=augmented_folder_prefix))
                     print(f"Number of blobs in augmented_images folder: {len(augmented_folder_blobs)}")
                 else:
