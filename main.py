@@ -231,6 +231,8 @@ def compare_picture():
                 # Now, let's compare with the augmented images
                 augmented_folder_blobs = bucket.list_blobs(prefix=f"{blob.name}/augmented_images/")
                 print("teste " + blob.name)
+                print(f"Number of blobs in augmented_images folder: {len(list(augmented_folder_blobs))}")
+               
                 for augmented_blob in augmented_folder_blobs:  # Iterate through augmented images
                     print("Inside the loop")
                     augmented_image_data = augmented_blob.download_as_bytes()
