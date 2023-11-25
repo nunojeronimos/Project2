@@ -230,7 +230,7 @@ def compare_picture():
 
                 # Now, let's compare with the augmented images
                 augmented_folder_blobs = []
-                augmented_folder_prefix = f"{blob.name}/augmented_images"
+                augmented_folder_prefix = f"{blob.name}/augmented_images/"
                 augmented_blob = bucket.get_blob(augmented_folder_prefix)
                 print("Folder Prefix: " + augmented_folder_prefix)
 
@@ -242,8 +242,8 @@ def compare_picture():
                     print("No blobs found in augmented_images folder.")
                 
                 for augmented_blob in augmented_folder_blobs:  # Iterate through augmented images
-                    print("Blob Name:", augmented_blob.name)
                     augmented_image_data = augmented_blob.download_as_bytes()
+                    print("Blob Name:", augmented_blob.name)
 
                     if not augmented_image_data:
                         continue
