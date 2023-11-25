@@ -229,33 +229,30 @@ def compare_picture():
                     print('Best match in original: ' + str(distance_original))
 
                 # Now, let's compare with the augmented images
-            augmented_folder_blobs = bucket.list_blobs(prefix=f"{blob.name}/augmented_images/")
-            print("teste" + blob.name)
-            for augmented_blob in augmented_folder_blobs:  # Iterate through augmented images
-                augmented_image_data = augmented_blob.download_as_bytes()
-                print("Inside the for aug_loop")
+                augmented_folder_blobs = bucket.list_blobs(prefix=f"{blob.name}/augmented_images/")
+                print("teste " + blob.name)
+                for augmented_blob in augmented_folder_blobs:  # Iterate through augmented images
+                    augmented_image_data = augmented_blob.download_as_bytes()
+                    print("Inside the for aug_loop")
 
-                if not augmented_image_data:
-                    print("No augmented image data found")
-                    continue
+                    if not augmented_image_data:
+                        continue
 
-                augmented_image_nparr = np.frombuffer(augmented_image_data, np.uint8)
-                augmented_image = cv2.imdecode(augmented_image_nparr, cv2.IMREAD_COLOR)
+                    augmented_image_nparr = np.frombuffer(augmented_image_data, np.uint8)
+                    augmented_image = cv2.imdecode(augmented_image_nparr, cv2.IMREAD_COLOR)
 
-                # Check if the augmented_image is valid and not empty
-                if augmented_image is None or augmented_image.size == 0:
-                    print("Invalid or empty augmented image")
-                    continue
+                    # Check if the augmented_image is valid and not empty
+                    if augmented_image is None or augmented_image.size == 0:
+                        continue
 
-                # Compute the Euclidean distance between the face regions for the augmented image
-                distance_augmented = np.sqrt(np.sum((input_image - augmented_image) ** 2))
-                print('Best match in aug_data: ' + str(distance_augmented))
+                    # Compute the Euclidean distance between the face regions for the augmented image
+                    distance_augmented = np.sqrt(np.sum((input_image - augmented_image) ** 2))
 
-                # Update the best match if the current user is closer with the augmented image
-                if distance_augmented < best_match_distance:
-                    best_match_distance = distance_augmented
-                    best_match = user_name
-                    print('Best match updated: ' + str(distance_augmented))
+                    # Update the best match if the current user is closer with the augmented image
+                    if distance_augmented < best_match_distance:
+                        best_match_distance = distance_augmented
+                        best_match = user_name
+                        print('Best match in aug_data: ' + str(distance_augmented))
 
             if best_match is not None:
                 return jsonify({"match": True, "name": best_match})
