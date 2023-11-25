@@ -230,7 +230,7 @@ def compare_picture():
 
                 # Now, let's compare with the augmented images
                 augmented_folder_blobs = []
-                augmented_folder_prefix = f"{blob.name}"
+                augmented_folder_prefix = f"{blob.name}/augmented_images"
                 augmented_blob = bucket.get_blob(augmented_folder_prefix)
                 print("Folder Prefix: " + augmented_folder_prefix)
 
