@@ -229,7 +229,7 @@ def compare_picture():
                     print('Best match in original: ' + str(distance_original))
 
                 # Now, let's compare with the augmented images
-                augmented_folder_blobs = bucket.list_blobs(prefix=f"{blob.name}/augmented_images/")
+                augmented_folder_blobs = list(bucket.list_blobs(prefix=f"{blob.name}/augmented_images/"))
                 print("teste " + blob.name)
                 print(f"Number of blobs in augmented_images folder: {len(list(augmented_folder_blobs))}")
                
