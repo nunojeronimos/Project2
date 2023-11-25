@@ -226,7 +226,7 @@ def compare_picture():
                 if distance_original < best_match_distance:
                     best_match_distance = distance_original
                     best_match = user_name
-                    print('Best mach in original: ' + distance_original)
+                    print('Best match in original: ' + str(distance_original))
 
                 # Now, let's compare with the augmented images
                 augmented_folder_blobs = bucket.list_blobs(prefix=f"{blob.name}/augmented_images/")
@@ -250,7 +250,7 @@ def compare_picture():
                     if distance_augmented < best_match_distance:
                         best_match_distance = distance_augmented
                         best_match = user_name
-                        print('Best mach in original: ' + distance_augmented)
+                        print('Best mach in original: ' + str(distance_augmented))
 
             if best_match is not None:
                 return jsonify({"match": True, "name": best_match})
