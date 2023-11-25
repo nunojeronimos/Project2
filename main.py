@@ -187,13 +187,13 @@ def compare_picture():
 
             # Convert the image data to a NumPy array
             nparr = np.frombuffer(image_data, np.uint8)
-            image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            input_image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-            # Check if the image is valid and not empty
-            if image is None or image.size == 0:
+            # Check if the input image is valid and not empty
+            if input_image is None or input_image.size == 0:
                 return jsonify({"error": "Invalid image data received."}), 400
 
-            # Compare the image with the pictures in the Google Cloud Storage bucket
+            # Compare the input image with the original and augmented images in the Google Cloud Storage bucket
             bucket_name = "jeronimo4"  # Replace with your actual bucket name
             client = storage.Client()
             bucket = client.bucket(bucket_name)
@@ -219,13 +219,36 @@ def compare_picture():
                 if known_image is None or known_image.size == 0:
                     continue
 
-                # Compute the Euclidean distance between the face regions
-                distance = np.sqrt(np.sum((image - known_image) ** 2))
+                # Compute the Euclidean distance between the face regions for the original image
+                distance_original = np.sqrt(np.sum((input_image - known_image) ** 2))
 
-                # Update the best match if the current user is closer
-                if distance < best_match_distance:
-                    best_match_distance = distance
+                # Update the best match if the current user is closer with the original image
+                if distance_original < best_match_distance:
+                    best_match_distance = distance_original
                     best_match = user_name
+
+                # Now, let's compare with the augmented images
+                augmented_folder_blob = bucket.blob(f"{blob.name}/augmented_images/")
+                for augmented_blob in augmented_folder_blob.list_blobs():  # Iterate through augmented images
+                    augmented_image_data = augmented_blob.download_as_bytes()
+
+                    if not augmented_image_data:
+                        continue
+
+                    augmented_image_nparr = np.frombuffer(augmented_image_data, np.uint8)
+                    augmented_image = cv2.imdecode(augmented_image_nparr, cv2.IMREAD_COLOR)
+
+                    # Check if the augmented_image is valid and not empty
+                    if augmented_image is None or augmented_image.size == 0:
+                        continue
+
+                    # Compute the Euclidean distance between the face regions for the augmented image
+                    distance_augmented = np.sqrt(np.sum((input_image - augmented_image) ** 2))
+
+                    # Update the best match if the current user is closer with the augmented image
+                    if distance_augmented < best_match_distance:
+                        best_match_distance = distance_augmented
+                        best_match = user_name
 
             if best_match is not None:
                 return jsonify({"match": True, "name": best_match})
@@ -237,6 +260,7 @@ def compare_picture():
         print("Error comparing the picture:")
         print(traceback.format_exc())
         return jsonify({"error": "Failed to compare the picture."}), 500
+
 
 @app.route("/profile")
 def profile():
