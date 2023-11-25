@@ -228,8 +228,8 @@ def compare_picture():
                     best_match = user_name
 
                 # Now, let's compare with the augmented images
-                augmented_folder_blob = bucket.blob(f"{blob.name}/augmented_images/")
-                for augmented_blob in augmented_folder_blob.list_blobs():  # Iterate through augmented images
+                augmented_folder_blobs = bucket.list_blobs(prefix=f"{blob.name}/augmented_images/")
+                for augmented_blob in augmented_folder_blobs:  # Iterate through augmented images
                     augmented_image_data = augmented_blob.download_as_bytes()
 
                     if not augmented_image_data:
