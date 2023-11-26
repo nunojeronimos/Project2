@@ -221,7 +221,7 @@ def compare_picture():
 
                 # Compute the Euclidean distance between the face regions for the original image
                 distance_original = np.sqrt(np.sum((input_image - known_image) ** 2))
-                print('Original Distance: ' + distance_original)
+                print('Original Distance: ' + str(distance_original))
 
                 # Update the best match if the current user is closer with the original image
                 if distance_original < best_match_distance:
@@ -258,7 +258,7 @@ def compare_picture():
 
                     # Compute the Euclidean distance between the face regions for the augmented image
                     distance_augmented = np.sqrt(np.sum((input_image - augmented_image) ** 2))
-                    print('Augmented image distance:' + distance_augmented)
+                    print('Augmented image distance:' + str(distance_augmented))
 
                     # Update the best match if the current user is closer with the augmented image
                     if distance_augmented < best_match_distance:
