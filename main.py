@@ -221,30 +221,30 @@ def compare_picture():
 
                 # Compute the Euclidean distance between the face regions for the original image
                 distance_original = np.sqrt(np.sum((input_image - known_image) ** 2))
-                print('Original Distance: ' + str(distance_original))
+                print(f'Original Distance for {user_name}: {distance_original}')
 
                 # Update the best match if the current user is closer with the original image
                 if distance_original < best_match_distance:
                     best_match_distance = distance_original
                     best_match = user_name
-                    print('Best match in original: ' + str(best_match_distance))
+                    #print('Best match in original: ' + str(best_match_distance))
 
                 # Now, let's compare with the augmented images
                 augmented_folder_blobs = []
                 augmented_folder_prefix = f"{blob.name}"
                 augmented_blob = bucket.get_blob(augmented_folder_prefix)
-                print("Folder Prefix: " + augmented_folder_prefix)
+                #print("Folder Prefix: " + augmented_folder_prefix)
 
                 if augmented_blob:
-                    print(f"Blob Name: {augmented_blob.name}")
+                    #print(f"Blob Name: {augmented_blob.name}")
                     augmented_folder_blobs = list(bucket.list_blobs(prefix=augmented_folder_prefix))
-                    print(f"Number of blobs in augmented_images folder: {len(augmented_folder_blobs)}")
+                    #print(f"Number of blobs in augmented_images folder: {len(augmented_folder_blobs)}")
                 else:
                     print("No blobs found in augmented_images folder.")
                 
                 for augmented_blob in augmented_folder_blobs:  # Iterate through augmented images
                     augmented_image_data = augmented_blob.download_as_bytes()
-                    print("Blob Name:", augmented_blob.name)
+                    #print("Blob Name:", augmented_blob.name)
 
                     if not augmented_image_data:
                         continue
@@ -258,7 +258,8 @@ def compare_picture():
 
                     # Compute the Euclidean distance between the face regions for the augmented image
                     distance_augmented = np.sqrt(np.sum((input_image - augmented_image) ** 2))
-                    print('Augmented image distance:' + str(distance_augmented))
+                    print(f'Augmented image distance for {user_name} ({augmented_blob.name}): {distance_augmented}')
+
 
                     # Update the best match if the current user is closer with the augmented image
                     if distance_augmented < best_match_distance:
