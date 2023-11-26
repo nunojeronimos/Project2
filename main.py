@@ -223,11 +223,9 @@ def compare_picture():
                 distance_original = np.sqrt(np.sum((input_image - known_image) ** 2))
                 print(f'Original Distance for {user_name}: {distance_original}')
 
-                # Update the best match if the current user is closer with the original image
-                if distance_original < best_match_distance:
-                    best_match_distance = distance_original
-                    best_match = user_name
-                    #print('Best match in original: ' + str(best_match_distance))
+                # Initialize the best match information for this user
+                best_match = user_name
+                best_match_distance = distance_original
 
                 # Now, let's compare with the augmented images
                 augmented_folder_blobs = []
@@ -266,6 +264,9 @@ def compare_picture():
                         best_match_distance = distance_augmented
                         best_match = user_name
                         print('Best match in aug_data: ' + str(distance_augmented))
+
+            # Print the final best match for this user
+            print(f'Best match for {user_name}: {best_match} (Distance: {best_match_distance}')
 
             if best_match is not None:
                 return jsonify({"match": True, "name": best_match})
