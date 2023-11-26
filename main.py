@@ -227,7 +227,7 @@ def compare_picture():
                 if distance_original < best_match_distance:
                     best_match_distance = distance_original
                     best_match = user_name
-                    print('Best match in original: ' + str(distance_original))
+                    print('Best match in original: ' + str(best_match_distance))
 
                 # Now, let's compare with the augmented images
                 augmented_folder_blobs = []
