@@ -32,28 +32,6 @@ def generate_frames():
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-def compare_faces(image1, image2):
-    # Convert images to grayscale
-    gray1 = cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY)
-    gray2 = cv2.cvtColor(image2, cv2.COLOR_BGR2GRAY)
-
-    # Detect faces in the images
-    faces1 = face_cascade.detectMultiScale(gray1, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-    faces2 = face_cascade.detectMultiScale(gray2, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-
-    # Iterate over the detected faces in image1
-    for (x1, y1, w1, h1) in faces1:
-        # Iterate over the detected faces in image2
-        for (x2, y2, w2, h2) in faces2:
-            # Compute the Euclidean distance between the face regions
-            distance = np.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
-
-            # If the distance is below a certain threshold, consider it a match
-            if distance < 50:
-                return True
-
-    return False
-
 def augment_image(image):
     # Randomly apply rotation
     angle = random.uniform(-15, 15)  # Adjust the range as needed
