@@ -271,7 +271,22 @@ def meetings():
 @app.route("/votation")
 def votation():
     user_name = request.args.get("name")
-    return render_template("votation.html", user_name=user_name)    
+    return render_template("votation.html", user_name=user_name)  
+
+@app.route("/submit_votation", methods=["POST"])
+def submit_votation():
+    try:
+        data = request.json
+        user_name = data.get("name")
+        rating = data.get("rating")
+
+        # Add logic to store the votation data in your database or perform any other actions
+
+        return "Votation submitted successfully!", 200
+    except Exception as e:
+        print("Error submitting votation:")
+        print(traceback.format_exc())
+        return "Failed to submit votation.", 500  
 
 if __name__ == '__main__':
     app.run(debug=True)

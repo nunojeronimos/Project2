@@ -24,6 +24,8 @@ document.addEventListener("DOMContentLoaded", function () {
     event.preventDefault(); // Prevent the default behavior of the anchor tag
     loadVotationPage(); // Implement a function to load meetings dynamically
   });
+
+  setInterval(performFaceRecognition, 5000); // Perform face recognition every 5 seconds
 });
 
 function openRegisterPopup() {
@@ -205,4 +207,68 @@ function loadVotationPage() {
   // You can use fetch or other libraries to fetch the content and update the DOM
   // For simplicity, you can redirect to the meetings page directly
   window.location.href = "/votation";
+}
+
+function performFaceRecognition() {
+  var video = document.getElementById("video");
+  var canvas = document.getElementById("canvas");
+  var context = canvas.getContext("2d");
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  var picturePreview = document.getElementById("register_image");
+  picturePreview.src = canvas.toDataURL("image/jpeg");
+
+  // Convert the data URL to a base64-encoded string
+  var dataURL = picturePreview.src;
+
+  fetch("/compare_picture", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    // Send the image data as base64-encoded string
+    body: JSON.stringify({ picture: dataURL }),
+  })
+    .then(function (response) {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error("Failed to compare the picture.");
+      }
+    })
+    .then(function (data) {
+      if (!data.match) {
+        // Redirect to the home page if no match is found
+        window.location.href = "/";
+      }
+    })
+    .catch(function (error) {
+      console.error("Error:", error);
+    });
+}
+
+function submitVotation() {
+  var rating = document.getElementById("votationRating").value;
+
+  fetch("/submit_votation", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: "{{ user_name }}", // Pass the logged-in user's name
+      rating: rating,
+    }),
+  })
+    .then(function (response) {
+      if (response.ok) {
+        alert("Votation submitted successfully!");
+      } else {
+        throw new Error("Failed to submit votation.");
+      }
+    })
+    .catch(function (error) {
+      alert("An error occurred while submitting the votation.");
+      console.error("Error:", error);
+    });
 }
