@@ -21,6 +21,32 @@
       </ul>
     </nav>
     <h1>Meetings Page</h1>
-    <!-- Add more content for the meetings page as needed -->
+    <div>
+      <button id="startMeeting" onclick="startMeeting()">Start Meeting</button>
+      <button id="stopMeeting" onclick="stopMeeting()">Stop Meeting</button>
+    </div>
+    <table id="participantsTable">
+      <!-- Table headers -->
+      <tr>
+        <th>Name</th>
+        <th>Entry Time</th>
+        <th>Leaving Time</th>
+      </tr>
+    </table>
+    <video id="video" autoplay></video>
+    <script>
+      const video = document.getElementById("video");
+
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices
+          .getUserMedia({ video: true })
+          .then(function (stream) {
+            video.srcObject = stream;
+          })
+          .catch(function (error) {
+            console.error("Error accessing the camera:", error);
+          });
+      }
+    </script>
   </body>
 </html>

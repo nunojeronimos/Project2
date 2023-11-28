@@ -8,6 +8,7 @@ import random
 from flask import Flask, render_template, request, Response, jsonify
 from google.cloud import storage
 from google.auth import compute_engine
+from datetime import datetime
 
 app = Flask(__name__, static_folder='static')
 
@@ -271,7 +272,38 @@ def meetings():
 @app.route("/votation")
 def votation():
     user_name = request.args.get("name")
-    return render_template("votation.html", user_name=user_name)    
+    return render_template("votation.html", user_name=user_name)  
+
+participants_data = []
+
+@app.route("/get_participants_data")
+def get_participants_data():
+    return jsonify(participants_data)
+
+@app.route("/update_participant_status", methods=["POST"])
+def update_participant_status():
+    try:
+        data = request.json
+        participant_name = data.get("name")
+        status = data.get("status")  # "entry" or "leaving"
+
+        if participant_name and status:
+            if status == "entry":
+                entry_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                participants_data.append({"name": participant_name, "entryTime": entry_time})
+            elif status == "leaving":
+                leaving_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                for participant in participants_data:
+                    if participant["name"] == participant_name:
+                        participant["leavingTime"] = leaving_time
+
+            return "Participant status updated successfully!", 200
+        else:
+            return "Invalid participant data or status received.", 400
+    except Exception as e:
+        print("Error updating participant status:")
+        print(traceback.format_exc())
+        return "Failed to update participant status.", 500  
 
 if __name__ == '__main__':
     app.run(debug=True)
