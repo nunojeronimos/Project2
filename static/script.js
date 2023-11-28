@@ -26,8 +26,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-var isMeetingActive = false;
-
 function openRegisterPopup() {
   document.getElementById("register_popup").classList.add("active");
 }
@@ -207,99 +205,4 @@ function loadVotationPage() {
   // You can use fetch or other libraries to fetch the content and update the DOM
   // For simplicity, you can redirect to the meetings page directly
   window.location.href = "/votation";
-}
-
-function startMeeting() {
-  isMeetingActive = true;
-  // Additional logic to handle starting the meeting (e.g., face recognition)
-  // You can use setInterval for continuous face recognition
-  setInterval(recognizeParticipants, 5000); // Adjust the interval as needed
-}
-
-function stopMeeting() {
-  isMeetingActive = false;
-  // Additional logic to handle stopping the meeting
-  clearInterval(); // Clear the interval for face recognition
-}
-
-function recognizeParticipants() {
-  if (isMeetingActive) {
-    // Additional logic for face recognition
-    // You can use the /compare_picture endpoint or a similar method
-    // Update the participants table with the recognized participants
-    updateParticipantsTable();
-  }
-}
-
-function updateParticipantsTable() {
-  // Fetch and update the participants table with the latest data
-  // You can use AJAX or fetch to update the table asynchronously
-  // Sample code (adjust as needed):
-  fetch("/get_participants_data")
-    .then(function (response) {
-      return response.json();
-    })
-    .then(function (data) {
-      // Update the participants table with the received data
-      var table = document.getElementById("participantsTable");
-      // Clear existing rows
-      while (table.rows.length > 1) {
-        table.deleteRow(1);
-      }
-      // Add new rows based on the received data
-      data.forEach(function (participant) {
-        var row = table.insertRow(-1);
-        var cell1 = row.insertCell(0);
-        var cell2 = row.insertCell(1);
-        var cell3 = row.insertCell(2);
-        cell1.innerHTML = participant.name;
-        cell2.innerHTML = participant.entryTime;
-        cell3.innerHTML = participant.leavingTime;
-
-        // Add buttons for entry and leaving
-        var entryButton = document.createElement("button");
-        entryButton.innerHTML = "Mark Entry";
-        entryButton.onclick = function () {
-          sendParticipantStatus("entry");
-        };
-        cell4.appendChild(entryButton);
-
-        var leavingButton = document.createElement("button");
-        leavingButton.innerHTML = "Mark Leaving";
-        leavingButton.onclick = function () {
-          sendParticipantStatus("leaving");
-        };
-        cell5.appendChild(leavingButton);
-      });
-    })
-    .catch(function (error) {
-      console.error("Error:", error);
-    });
-}
-
-function sendParticipantStatus(status) {
-  var participantName = prompt("Enter your name:");
-  if (!participantName) {
-    alert("Please enter your name.");
-    return;
-  }
-
-  fetch("/update_participant_status", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ name: participantName, status: status }),
-  })
-    .then(function (response) {
-      if (response.ok) {
-        alert("Participant status updated successfully!");
-      } else {
-        throw new Error("Failed to update participant status.");
-      }
-    })
-    .catch(function (error) {
-      alert("An error occurred while updating participant status.");
-      console.error("Error:", error);
-    });
 }
