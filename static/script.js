@@ -210,6 +210,7 @@ function loadVotationPage() {
 }
 
 function performFaceRecognition() {
+  console.log("performFaceRecognition started");
   var video = document.getElementById("video");
   var canvas = document.getElementById("canvas");
   var context = canvas.getContext("2d");
@@ -231,6 +232,7 @@ function performFaceRecognition() {
   })
     .then(function (response) {
       if (response.ok) {
+        console.log("mach is being found " + data.match);
         return response.json();
       } else {
         throw new Error("Failed to compare the picture.");
@@ -238,6 +240,7 @@ function performFaceRecognition() {
     })
     .then(function (data) {
       if (!data.match) {
+        console.log("mach wasnr found");
         // Redirect to the home page if no match is found
         window.location.href = "/";
       }
