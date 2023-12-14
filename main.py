@@ -249,7 +249,7 @@ def compare_picture():
 
             if best_match is not None:
                 return jsonify({"match": True, "name": best_match})
-            elif best_match is None and best_match_distance < threshold_value:
+            elif best_match is None and best_match_distance > threshold_value:
                 return jsonify({"match": False, "error": "No matching user found."})
             else:
                 return jsonify({"match": False, "error": "No face detected or no matching user."})
