@@ -171,13 +171,13 @@ def compare_picture():
             if input_image is None or input_image.size == 0:
                 return jsonify({"error": "Invalid image data received."}), 400
 
-            # Compare the input image with the original and augmented images in the Google Cloud Storage bucket
+            # Initialize best match information
+            best_match = None
+            best_match_distance = float('inf')
+
             bucket_name = "jeronimo4"  # Replace with your actual bucket name
             client = storage.Client()
             bucket = client.bucket(bucket_name)
-
-            best_match = None
-            best_match_distance = float('inf')
 
             for blob in bucket.list_blobs(prefix="user_"):  # Iterate through user directories
                 # Extract the user's name from the directory name
@@ -201,26 +201,12 @@ def compare_picture():
                 distance_original = np.sqrt(np.sum((input_image - known_image) ** 2))
                 print(f'Original Distance for {user_name}: {distance_original}')
 
-                # Initialize the best match information for this user
-                best_match = user_name
-                best_match_distance = distance_original
-
                 # Now, let's compare with the augmented images
-                augmented_folder_blobs = []
-                augmented_folder_prefix = f"{blob.name}"
-                augmented_blob = bucket.get_blob(augmented_folder_prefix)
-                #print("Folder Prefix: " + augmented_folder_prefix)
+                augmented_folder_prefix = f"{blob.name}augmented_images/"
+                augmented_folder_blobs = list(bucket.list_blobs(prefix=augmented_folder_prefix))
 
-                if augmented_blob:
-                    #print(f"Blob Name: {augmented_blob.name}")
-                    augmented_folder_blobs = list(bucket.list_blobs(prefix=augmented_folder_prefix))
-                    #print(f"Number of blobs in augmented_images folder: {len(augmented_folder_blobs)}")
-                else:
-                    print("No blobs found in augmented_images folder.")
-                
                 for augmented_blob in augmented_folder_blobs:  # Iterate through augmented images
                     augmented_image_data = augmented_blob.download_as_bytes()
-                    #print("Blob Name:", augmented_blob.name)
 
                     if not augmented_image_data:
                         continue
@@ -236,7 +222,6 @@ def compare_picture():
                     distance_augmented = np.sqrt(np.sum((input_image - augmented_image) ** 2))
                     print(f'Augmented image distance for {user_name} ({augmented_blob.name}): {distance_augmented}')
 
-
                     # Update the best match if the current user is closer with the augmented image
                     if distance_augmented < best_match_distance:
                         best_match_distance = distance_augmented
@@ -244,7 +229,7 @@ def compare_picture():
                         print('Best match in aug_data: ' + str(distance_augmented))
 
             # Print the final best match for this user
-            print(f'Best match for {user_name}: {best_match} (Distance: {best_match_distance}')
+            print(f'Best match22: {best_match} (Distance: {best_match_distance}')
 
             if best_match is not None:
                 return jsonify({"match": True, "name": best_match})
@@ -256,6 +241,7 @@ def compare_picture():
         print("Error comparing the picture:")
         print(traceback.format_exc())
         return jsonify({"error": "Failed to compare the picture."}), 500
+
 
 
 @app.route("/profile")
