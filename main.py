@@ -158,6 +158,7 @@ def compare_picture():
     try:
         data = request.json
         picture_data = data.get("picture")
+        threshold_value = 9700
 
         if picture_data:
             # Decode the base64 image data
@@ -201,6 +202,10 @@ def compare_picture():
                 distance_original = np.sqrt(np.sum((input_image - known_image) ** 2))
                 print(f'Original Distance for {user_name}: {distance_original}')
 
+                # Initialize the best match information for this user
+                best_match = user_name
+                best_match_distance = distance_original
+
                 # Now, let's compare with the augmented images
                 augmented_folder_blobs = []
                 augmented_folder_prefix = f"{blob.name}"
@@ -240,10 +245,12 @@ def compare_picture():
                         print('Best match in aug_data: ' + str(distance_augmented))
 
             # Print the final best match for this user
-            print(f'Best match3333 for {user_name}: {best_match} (Distance: {best_match_distance}')
+            print(f'Best match for {user_name}: {best_match} (Distance: {best_match_distance}')
 
             if best_match is not None:
                 return jsonify({"match": True, "name": best_match})
+            elif best_match is None and best_match_distance < threshold_value:
+                return jsonify({"match": False, "error": "No matching user found."})
             else:
                 return jsonify({"match": False, "error": "No face detected or no matching user."})
         else:
