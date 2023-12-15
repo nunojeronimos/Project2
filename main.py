@@ -158,6 +158,7 @@ def compare_picture():
     try:
         data = request.json
         picture_data = data.get("picture")
+        threshold_value = 7000
 
         if picture_data:
             # Decode the base64 image data
@@ -235,7 +236,7 @@ def compare_picture():
             # Print the final best match for this user
             print(f'Best match for {user_name}: {best_match} (Distance: {best_match_distance}')
 
-            if best_match is not None:
+            if best_match_distance <= threshold_value and best_match is not None:
                 return jsonify({"match": True, "name": best_match})
             else:
                 return jsonify({"match": False, "error": "No face detected or no matching user."})
