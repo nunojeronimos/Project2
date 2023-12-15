@@ -201,26 +201,20 @@ def compare_picture():
                 distance_original = np.sqrt(np.sum((input_image - known_image) ** 2))
                 print(f'Original Distance for {user_name}: {distance_original}')
 
-                # Initialize the best match information for this user
-                best_match = user_name
-                best_match_distance = distance_original
+                # Update the best match if the current user is closer with the original image
+                if distance_original < best_match_distance:
+                    best_match_distance = distance_original
+                    best_match = user_name
 
                 # Now, let's compare with the augmented images
                 augmented_folder_blobs = []
                 augmented_folder_prefix = f"{blob.name}"
-                augmented_blob = bucket.get_blob(augmented_folder_prefix)
-                #print("Folder Prefix: " + augmented_folder_prefix)
 
-                if augmented_blob:
-                    #print(f"Blob Name: {augmented_blob.name}")
+                if blob.get_blob(augmented_folder_prefix):  # Check if the augmented folder exists
                     augmented_folder_blobs = list(bucket.list_blobs(prefix=augmented_folder_prefix))
-                    #print(f"Number of blobs in augmented_images folder: {len(augmented_folder_blobs)}")
-                else:
-                    print("No blobs found in augmented_images folder.")
-                
+
                 for augmented_blob in augmented_folder_blobs:  # Iterate through augmented images
                     augmented_image_data = augmented_blob.download_as_bytes()
-                    #print("Blob Name:", augmented_blob.name)
 
                     if not augmented_image_data:
                         continue
@@ -235,7 +229,6 @@ def compare_picture():
                     # Compute the Euclidean distance between the face regions for the augmented image
                     distance_augmented = np.sqrt(np.sum((input_image - augmented_image) ** 2))
                     print(f'Augmented image distance for {user_name} ({augmented_blob.name}): {distance_augmented}')
-
 
                     # Update the best match if the current user is closer with the augmented image
                     if distance_augmented < best_match_distance:
