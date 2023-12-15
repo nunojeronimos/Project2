@@ -8,7 +8,6 @@ import random
 from flask import Flask, render_template, request, Response, jsonify
 from google.cloud import storage
 from google.auth import compute_engine
-from skimage import exposure
 
 app = Flask(__name__, static_folder='static')
 
@@ -112,21 +111,9 @@ def save_picture():
             nparr = np.frombuffer(image_data, np.uint8)
             original_image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-            # Apply histogram equalization
-            original_image = exposure.equalize_hist(original_image)
-
-            # Normalize pixel values
-            original_image = original_image.astype(np.float32) / 255.0
-
             # Perform augmentation and save the augmented images
             for i in range(5):  # Change the number of augmented images as needed
                 augmented_image = augment_image(original_image)
-
-                # Apply histogram equalization
-                augmented_image = exposure.equalize_hist(augmented_image)
-
-                # Normalize pixel values
-                augmented_image = augmented_image.astype(np.float32) / 255.0
 
                 # Save the augmented image to "augmented_images" folder with a unique name
                 augmented_blob = bucket.blob(f"{user_folder}/augmented_images/{picture_name}_augmented_{i}.jpg")
@@ -179,7 +166,6 @@ def compare_picture():
             # Convert the image data to a NumPy array
             nparr = np.frombuffer(image_data, np.uint8)
             input_image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-            input_image = input_image.astype(np.float32) / 255.0
 
             # Check if the input image is valid and not empty
             if input_image is None or input_image.size == 0:
@@ -206,7 +192,6 @@ def compare_picture():
 
                 known_image_nparr = np.frombuffer(known_image_data, np.uint8)
                 known_image = cv2.imdecode(known_image_nparr, cv2.IMREAD_COLOR)
-                known_image = known_image.astype(np.float32) / 255.0
 
                 # Check if the known_image is valid and not empty
                 if known_image is None or known_image.size == 0:
@@ -242,7 +227,6 @@ def compare_picture():
 
                     augmented_image_nparr = np.frombuffer(augmented_image_data, np.uint8)
                     augmented_image = cv2.imdecode(augmented_image_nparr, cv2.IMREAD_COLOR)
-                    augmented_image = augmented_image.astype(np.float32) / 255.0
 
                     # Check if the augmented_image is valid and not empty
                     if augmented_image is None or augmented_image.size == 0:
