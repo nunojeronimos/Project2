@@ -52,7 +52,11 @@ def augment_image(image):
     return augmented_image
 
 def calculate_euclidean_distance(image1, image2):
-    return distance.euclidean(image1, image2)
+    # Flatten the 3-D arrays to 1-D arrays
+    flat_image1 = image1.flatten()
+    flat_image2 = image2.flatten()
+    # Calculate the Euclidean distance
+    return distance.euclidean(flat_image1, flat_image2)
 
 @app.route("/try_again", methods=["POST"])
 def try_again():
