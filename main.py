@@ -8,6 +8,7 @@ import random
 from flask import Flask, render_template, request, Response, jsonify
 from google.cloud import storage
 from google.auth import compute_engine
+#from euclidean_distance_function import calculate_euclidean_distance
 
 app = Flask(__name__, static_folder='static')
 
@@ -49,6 +50,8 @@ def augment_image(image):
     augmented_image = cv2.convertScaleAbs(noisy_image, alpha=alpha, beta=beta)
     return augmented_image
 
+def calculate_euclidean_distance(image1, image2):
+    return np.sqrt(np.sum((image1 - image2) ** 2))
 
 @app.route("/try_again", methods=["POST"])
 def try_again():
@@ -198,7 +201,7 @@ def compare_picture():
                     continue
 
                 # Compute the Euclidean distance between the face regions for the original image
-                distance_original = np.sqrt(np.sum((input_image - known_image) ** 2))
+                distance_original = calculate_euclidean_distance(input_image, known_image)
                 print(f'Original Distance for {user_name}: {distance_original}')
 
                 # Update the best match if the current user is closer with the original image
@@ -223,7 +226,7 @@ def compare_picture():
                         continue
 
                     # Compute the Euclidean distance between the face regions for the augmented image
-                    distance_augmented = np.sqrt(np.sum((input_image - augmented_image) ** 2))
+                    distance_augmented = calculate_euclidean_distance(input_image, augmented_image)
                     print(f'Augmented image distance for {user_name} ({augmented_blob.name}): {distance_augmented}')
 
                     # Update the best match if the current user is closer with the augmented image
