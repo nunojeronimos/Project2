@@ -8,7 +8,8 @@ import random
 from flask import Flask, render_template, request, Response, jsonify
 from google.cloud import storage
 from google.auth import compute_engine
-#from euclidean_distance_function import calculate_euclidean_distance
+from scipy.spatial import distance
+from tqdm import tqdm
 
 app = Flask(__name__, static_folder='static')
 
@@ -51,7 +52,7 @@ def augment_image(image):
     return augmented_image
 
 def calculate_euclidean_distance(image1, image2):
-    return np.sqrt(np.sum((image1 - image2) ** 2))
+    return distance.euclidean(image1, image2)
 
 @app.route("/try_again", methods=["POST"])
 def try_again():
