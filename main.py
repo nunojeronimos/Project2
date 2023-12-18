@@ -55,8 +55,14 @@ def calculate_euclidean_distance(image1, image2):
     # Flatten the 3-D arrays to 1-D arrays
     flat_image1 = image1.flatten()
     flat_image2 = image2.flatten()
+
     # Calculate the Euclidean distance
-    return distance.euclidean(flat_image1, flat_image2)
+    raw_distance = distance.euclidean(flat_image1, flat_image2)
+
+    # Normalize the distance by the number of pixels (length of flattened arrays)
+    normalized_distance = raw_distance / len(flat_image1)
+
+    return normalized_distance
 
 @app.route("/try_again", methods=["POST"])
 def try_again():
