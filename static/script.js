@@ -19,12 +19,6 @@ document.addEventListener("DOMContentLoaded", function () {
     loadMeetingsPage(); // Implement a function to load meetings dynamically
   });
 
-  var votationLink = document.getElementById("meeting_link");
-  votationLink.addEventListener("click", function (event) {
-    event.preventDefault(); // Prevent the default behavior of the anchor tag
-    loadVotationPage(); // Implement a function to load meetings dynamically
-  });
-
   var submitVotationButton = document.getElementById("submit_votation_button");
   submitVotationButton.addEventListener("click", submitVotation);
 
