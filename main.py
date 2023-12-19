@@ -242,7 +242,7 @@ def compare_picture():
                     print(f'Augmented image distance for {user_name} ({augmented_blob.name}): {distance_augmented}')
 
                     # Update the best match if the current user is closer with the augmented image
-                    if distance_augmented < best_match_distance and distance_augmented <= threshold:
+                    if distance_augmented < best_match_distance:
                         best_match_distance = distance_augmented
                         best_match = user_name
                         print('Best match in aug_data: ' + str(distance_augmented))
@@ -250,7 +250,7 @@ def compare_picture():
             # Print the final best match for this user
             print(f'Best match for {user_name}: {best_match} (Distance: {best_match_distance}')
 
-            if best_match is not None and best_match_distance <= threshold:
+            if best_match_distance <= threshold and best_match is not None:
                 return jsonify({"match": True, "name": best_match})
             else:
                 return jsonify({"match": False, "error": "No face detected or no matching user."})
