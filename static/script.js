@@ -232,17 +232,18 @@ function performFaceRecognition() {
   })
     .then(function (response) {
       if (response.ok) {
-        console.log("mach is being found " + data.match);
         return response.json();
       } else {
         throw new Error("Failed to compare the picture.");
       }
     })
     .then(function (data) {
-      if (!data.match) {
-        console.log("mach wasnr found");
-        // Redirect to the home page if no match is found
-        window.location.href = "/";
+      if (data && data.match) {
+        console.log("Match found for user: " + data.name);
+        // You can perform additional actions here if a match is found
+      } else {
+        console.log("No match found");
+        // You might want to handle this case differently, depending on your requirements
       }
     })
     .catch(function (error) {
