@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
-  var loginButton = document.getElementById("login_button");
-  loginButton.addEventListener("click", Login);
+  //var loginButton = document.getElementById("login_button");
+  //loginButton.addEventListener("click", Login);
 
   var registerButton = document.getElementById("register_button");
   registerButton.addEventListener("click", openRegisterPopup);
