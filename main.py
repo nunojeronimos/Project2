@@ -15,7 +15,7 @@ app = Flask(__name__, static_folder='static')
 
 camera = cv2.VideoCapture(0)
 
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
 
 def generate_frames():
@@ -180,13 +180,6 @@ def compare_picture():
             # Convert the image data to a NumPy array
             nparr = np.frombuffer(image_data, np.uint8)
             input_image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-
-            # Detect faces in the input image
-            faces = face_cascade.detectMultiScale(input_image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-
-            if len(faces) == 0:
-                # No face detected, handle this case (e.g., return an error response)
-                return jsonify({"error": "No face detected in the input image."}), 400
 
             # Check if the input image is valid and not empty
             if input_image is None or input_image.size == 0:
