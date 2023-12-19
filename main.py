@@ -242,7 +242,7 @@ def compare_picture():
                     print(f'Augmented image distance for {user_name} ({augmented_blob.name}): {distance_augmented}')
 
                     # Update the best match if the current user is closer with the augmented image
-                    if distance_augmented < best_match_distance:
+                    if distance_augmented < best_match_distance and distance_augmented <= threshold:
                         best_match_distance = distance_augmented
                         best_match = user_name
                         print('Best match in aug_data: ' + str(distance_augmented))
