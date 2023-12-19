@@ -31,27 +31,6 @@
       <!-- Add options up to 10 -->
       <option value="5">5</option>
     </select>
-    <button onclick="submitVotation()">Submit Votation</button>
-    <script>
-      const video = document.getElementById("video");
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices
-          .getUserMedia({ video: true })
-          .then(function (stream) {
-            video.srcObject = stream;
-          })
-          .catch(function (error) {
-            console.error("Error accessing the camera:", error);
-          });
-      }
-      function submitVotation() {
-        var rating = document.getElementById("votationRating").value;
-
-        // Add logic to submit the votation data, e.g., send a request to the server
-        // with the user's name, rating, etc.
-
-        alert("Votation submitted successfully!");
-      }
-    </script>
+    <button id="submit_votation_button">Submit Votation</button>
   </body>
 </html>
