@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
   var submitVotationButton = document.getElementById("submit_votation_button");
   submitVotationButton.addEventListener("click", submitVotation);
 
-  setInterval(performFaceRecognition, 5000); // Perform face recognition every 5 seconds
+  //setInterval(performFaceRecognition, 5000); // Perform face recognition every 5 seconds
 });
 
 function openRegisterPopup() {
