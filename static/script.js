@@ -267,6 +267,7 @@ function submitVotation() {
     .then(function (response) {
       if (response.ok) {
         alert("Votation submitted successfully!");
+        console.log("submited!");
       } else {
         throw new Error("Failed to submit votation.");
       }
