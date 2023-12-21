@@ -208,10 +208,10 @@ function loadVotationPage() {
 
 function performFaceRecognition() {
   console.log("performFaceRecognition started");
-  var video = document.getElementById("video");
-  var canvas = document.getElementById("canvas");
+  //var video = document.getElementById("video");
+  //var canvas = document.getElementById("canvas");
   //var context = canvas.getContext("2d");
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  //context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
   var picturePreview = document.getElementById("register_image");
   picturePreview.src = canvas.toDataURL("image/jpeg");
