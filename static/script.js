@@ -153,7 +153,7 @@ function tryAgain() {
 }
 
 function Login() {
-  //var canvas = document.getElementById("canvas");
+  var canvas = document.getElementById("canvas");
   var context = canvas.getContext("2d");
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
@@ -210,7 +210,7 @@ function performFaceRecognition() {
   console.log("performFaceRecognition started");
   var video = document.getElementById("video");
   var canvas = document.getElementById("canvas");
-  var context = canvas.getContext("2d");
+  //var context = canvas.getContext("2d");
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
   var picturePreview = document.getElementById("register_image");
