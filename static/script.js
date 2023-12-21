@@ -208,7 +208,7 @@ function loadVotationPage() {
 
 function performFaceRecognition() {
   console.log("performFaceRecognition started");
-  //var video = document.getElementById("video");
+  var video = document.getElementById("video");
   var canvas = document.getElementById("canvas");
   var context = canvas.getContext("2d");
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
