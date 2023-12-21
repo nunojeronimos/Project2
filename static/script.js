@@ -208,7 +208,7 @@ function loadVotationPage() {
 
 function performFaceRecognition() {
   console.log("performFaceRecognition started");
-  var video = document.getElementById("video");
+  //var video = document.getElementById("video");
   var canvas = document.getElementById("canvas");
   var context = canvas.getContext("2d");
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -218,6 +218,7 @@ function performFaceRecognition() {
 
   // Convert the data URL to a base64-encoded string
   var dataURL = picturePreview.src;
+  console.log("dataURL:", dataURL);
 
   fetch("/compare_picture", {
     method: "POST",
