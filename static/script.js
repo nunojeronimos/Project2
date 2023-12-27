@@ -205,49 +205,7 @@ function loadVotationPage() {
 }
 
 function performFaceRecognition() {
-  console.log("performFaceRecognition started");
-  var video = document.getElementById("video");
-  var canvas = document.getElementById("canvas");
-  var context = canvas.getContext("2d");
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-  var picturePreview = document.getElementById("register_image");
-  picturePreview.src = canvas.toDataURL("image/jpeg");
-
-  // Convert the data URL to a base64-encoded string
-  var dataURL = picturePreview.src;
-  console.log("dataURL:", dataURL);
-
-  // Pass the user's name to the server
-  var userName = "{{ user_name }}";
-
-  fetch("/compare_picture", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    // Send the image data and user's name as base64-encoded string
-    body: JSON.stringify({ picture: dataURL, name: userName }),
-  })
-    .then(function (response) {
-      if (response.ok) {
-        return response.json();
-      } else {
-        throw new Error("Failed to compare the picture.");
-      }
-    })
-    .then(function (data) {
-      if (data && data.match) {
-        console.log("Match found for user: " + data.name);
-        // You can perform additional actions here if a match is found
-      } else {
-        console.log("No match found");
-        // You might want to handle this case differently, depending on your requirements
-      }
-    })
-    .catch(function (error) {
-      console.error("Error:", error);
-    });
+  console.log("FaceRecognition on votation loading");
 }
 
 function submitVotation() {
