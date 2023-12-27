@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <script src="{{ url_for('static', filename='script.js') }}?v=1.2"></script>
+    <script src="{{ url_for('static', filename='script.js') }}?v=1.3"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link
       rel="stylesheet"
@@ -23,6 +23,7 @@
     </nav>
     <h1>Votation Page</h1>
     <video id="video" autoplay></video>
+    <canvas id="canvas" width="640" height="480" style="display: none"></canvas>
     <p>Rate the website:</p>
     <select id="votationRating">
       <option value="1">1</option>
