@@ -21,8 +21,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   var submitVotationButton = document.getElementById("submit_votation_button");
   submitVotationButton.addEventListener("click", submitVotation);
-
-  //setInterval(performFaceRecognition, 5000); // Perform face recognition every 5 seconds
 });
 
 function openRegisterPopup() {
@@ -208,10 +206,10 @@ function loadVotationPage() {
 
 function performFaceRecognition() {
   console.log("performFaceRecognition started");
-  //var video = document.getElementById("video");
-  //var canvas = document.getElementById("canvas");
-  //var context = canvas.getContext("2d");
-  //context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  var video = document.getElementById("video");
+  var canvas = document.getElementById("canvas");
+  var context = canvas.getContext("2d");
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
   var picturePreview = document.getElementById("register_image");
   picturePreview.src = canvas.toDataURL("image/jpeg");
@@ -248,6 +246,8 @@ function performFaceRecognition() {
       console.error("Error:", error);
     });
 }
+
+setInterval(performFaceRecognition, 20000);
 
 function submitVotation() {
   var rating = document.getElementById("votationRating").value;
