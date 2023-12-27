@@ -172,6 +172,7 @@ def compare_picture():
     try:
         data = request.json
         picture_data = data.get("picture")
+        user_name = data.get("name")
         distance_limit = 0.12
 
         if picture_data:

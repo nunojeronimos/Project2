@@ -218,13 +218,16 @@ function performFaceRecognition() {
   var dataURL = picturePreview.src;
   console.log("dataURL:", dataURL);
 
+  // Pass the user's name to the server
+  var userName = "{{ user_name }}";
+
   fetch("/compare_picture", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    // Send the image data as base64-encoded string
-    body: JSON.stringify({ picture: dataURL }),
+    // Send the image data and user's name as base64-encoded string
+    body: JSON.stringify({ picture: dataURL, name: userName }),
   })
     .then(function (response) {
       if (response.ok) {
@@ -246,8 +249,6 @@ function performFaceRecognition() {
       console.error("Error:", error);
     });
 }
-
-setInterval(performFaceRecognition, 20000);
 
 function submitVotation() {
   var rating = document.getElementById("votationRating").value;
