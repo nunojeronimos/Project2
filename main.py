@@ -56,6 +56,9 @@ def calculate_euclidean_distance(image1, image2):
     flat_image1 = image1.flatten()
     flat_image2 = image2.flatten()
 
+    if len(flat_image1) != len(flat_image2):
+        raise ValueError("Images have different number of elements")
+
     # Calculate the Euclidean distance
     raw_distance = distance.euclidean(flat_image1, flat_image2)
 
