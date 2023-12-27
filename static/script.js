@@ -205,46 +205,8 @@ function loadVotationPage() {
 }
 
 function performFaceRecognition() {
-  console.log("call performFaceRecognition");
-  var video = document.getElementById("video");
-  var canvas = document.createElement("canvas");
-  var context = canvas.getContext("2d");
-
-  // Draw the current video frame onto the canvas
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-  // Convert the canvas content to a data URL (base64-encoded image)
-  var faceData = canvas.toDataURL("image/jpeg");
-
-  // Fetch the server to perform face recognition
-  fetch("/compare_picture", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ picture: faceData }),
-  })
-    .then(function (response) {
-      return response.json();
-    })
-    .then(function (data) {
-      if (data.match) {
-        alert("Hello, " + data.name);
-        console.log("Hello " + data.name);
-        // You can add additional logic here based on the face recognition result
-      } else {
-        alert("No match found. Please log in again.");
-        // Redirect to the login page or perform any other action
-        window.location.href = "/";
-      }
-    })
-    .catch(function (error) {
-      console.error("Error performing face recognition:", error);
-    });
+  console.log("FaceRecognition on votation loading");
 }
-
-// Set up a timer to call performFaceRecognition every 20 seconds
-setInterval(performFaceRecognition, 20000);
 
 function submitVotation() {
   var rating = document.getElementById("votationRating").value;
