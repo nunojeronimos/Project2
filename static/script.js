@@ -173,7 +173,9 @@ function Login() {
       if (response.ok) {
         return response.json();
       } else {
-        throw new Error("Failed to compare the picture.");
+        return response.json().then(function (data) {
+          throw new Error(data.error || "Failed to compare the picture.");
+        });
       }
     })
     .then(function (data) {

@@ -259,11 +259,13 @@ def compare_picture():
 
             # Print the final best match for this user
             print(f'Best match for {user_name}: {best_match} (Distance: {best_match_distance}')
-        if best_match_distance > distance_limit:
-            if best_match is not None:
-                return jsonify({"match": True, "name": best_match})
+            if best_match_distance > distance_limit:
+                if best_match is not None:
+                    return jsonify({"match": True, "name": best_match})
+                else:
+                    return jsonify({"match": False, "error": "No matching user found."})
             else:
-                return jsonify({"match": False, "error": "No face detected or no matching user."})
+                return jsonify({"match": False, "error": "Face match distance below the threshold."}), 400
         else:
             return jsonify({"error": "Invalid picture data received."}), 400
     except Exception as e:
