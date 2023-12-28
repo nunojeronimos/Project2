@@ -207,9 +207,16 @@ function loadVotationPage() {
 function performFaceRecognition() {
   var video = document.getElementById("video");
 
+  // Create a temporary canvas element
+  var tempCanvas = document.createElement("canvas");
+  tempCanvas.width = video.videoWidth;
+  tempCanvas.height = video.videoHeight;
+  var context = tempCanvas.getContext("2d");
+  context.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+
   // Capture the current video frame
   var picturePreview = document.createElement("img");
-  picturePreview.src = video.toDataURL("image/jpeg");
+  picturePreview.src = tempCanvas.toDataURL("image/jpeg");
 
   // Convert the data URL to a base64-encoded string
   var dataURL = picturePreview.src;
