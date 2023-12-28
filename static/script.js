@@ -205,8 +205,45 @@ function loadVotationPage() {
 }
 
 function performFaceRecognition() {
-  console.log("FaceRecognition on votation loading");
+  var video = document.getElementById("video");
+
+  // Capture the current video frame
+  var picturePreview = document.createElement("img");
+  picturePreview.src = video.toDataURL("image/jpeg");
+
+  // Convert the data URL to a base64-encoded string
+  var dataURL = picturePreview.src;
+
+  fetch("/compare_picture", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    // Send the image data as a base64-encoded string
+    body: JSON.stringify({ picture: dataURL }),
+  })
+    .then(function (response) {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error("Failed to compare the picture.");
+      }
+    })
+    .then(function (data) {
+      if (data.match) {
+        // Handle the result as needed
+        console.log("Face recognized:", data.name);
+      } else {
+        console.log("No match found.");
+      }
+    })
+    .catch(function (error) {
+      console.error("Error during face recognition:", error);
+    });
 }
+
+// Call performFaceRecognition every 20 seconds
+setInterval(performFaceRecognition, 20000);
 
 function submitVotation() {
   var rating = document.getElementById("votationRating").value;
