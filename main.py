@@ -225,49 +225,45 @@ def compare_picture():
                     best_match_distance = distance_original
                     best_match = user_name
 
-            # Now, let's compare with the augmented images
-            augmented_folder_blobs = list(bucket.list_blobs(prefix=f"{blob.name}"))
+                # Now, let's compare with the augmented images
+                augmented_folder_blobs = list(bucket.list_blobs(prefix=f"{blob.name}"))
 
-            for augmented_blob in augmented_folder_blobs:  # Iterate through augmented images
-                augmented_image_data = augmented_blob.download_as_bytes()
+                for augmented_blob in augmented_folder_blobs:  # Iterate through augmented images
+                    augmented_image_data = augmented_blob.download_as_bytes()
 
-                if not augmented_image_data:
-                    continue
+                    if not augmented_image_data:
+                        continue
 
-                augmented_image_nparr = np.frombuffer(augmented_image_data, np.uint8)
-                augmented_image = cv2.imdecode(augmented_image_nparr, cv2.IMREAD_COLOR)
+                    augmented_image_nparr = np.frombuffer(augmented_image_data, np.uint8)
+                    augmented_image = cv2.imdecode(augmented_image_nparr, cv2.IMREAD_COLOR)
 
-                # Check if the augmented_image is valid and not empty
-                if augmented_image is None or augmented_image.size == 0:
-                    continue
+                    # Check if the augmented_image is valid and not empty
+                    if augmented_image is None or augmented_image.size == 0:
+                        continue
 
-                # Compute the Euclidean distance between the face regions for the augmented image
-                distance_augmented = calculate_euclidean_distance(input_image, augmented_image)
-                print(f'Augmented image distance for {user_name} ({augmented_blob.name}): {distance_augmented}')
+                    # Compute the Euclidean distance between the face regions for the augmented image
+                    distance_augmented = calculate_euclidean_distance(input_image, augmented_image)
+                    print(f'Augmented image distance for {user_name} ({augmented_blob.name}): {distance_augmented}')
 
-                # Update the best match if the current user is closer with the augmented image
-                if distance_augmented < best_match_distance:
-                    best_match_distance = distance_augmented
-                    best_match = user_name
-                    print('Best match in aug_data: ' + str(distance_augmented))
+                    # Update the best match if the current user is closer with the augmented image
+                    if distance_augmented < best_match_distance:
+                        best_match_distance = distance_augmented
+                        best_match = user_name
+                        print('Best match in aug_data: ' + str(distance_augmented))
 
             # Print the final best match for this user
             print(f'Best match for {user_name}: {best_match} (Distance: {best_match_distance}')
-            
-            # Check if the best match is within the distance limit
-            if best_match_distance > distance_limit:
-                return jsonify({"match": False, "error": "No matching user within distance limit."})
-            else:
+        if best_match_distance > distance_limit:
+            if best_match is not None:
                 return jsonify({"match": True, "name": best_match})
-                
+            else:
+                return jsonify({"match": False, "error": "No face detected or no matching user."})
         else:
             return jsonify({"error": "Invalid picture data received."}), 400
-            
     except Exception as e:
         print("Error comparing the picture:")
         print(traceback.format_exc())
         return jsonify({"error": "Failed to compare the picture."}), 500
-
 
 
 @app.route("/profile")
