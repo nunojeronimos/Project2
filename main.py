@@ -190,6 +190,12 @@ def compare_picture():
             if input_image is None or input_image.size == 0:
                 return jsonify({"error": "Invalid image data received."}), 400
 
+            # Detect faces in the input image
+            faces = face_cascade.detectMultiScale(input_image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+            if len(faces) == 0:
+                return jsonify({"error": "No face detected in the input image."}), 400
+
             # Compare the input image with the original and augmented images in the Google Cloud Storage bucket
             bucket_name = "jeronimo4"  # Replace with your actual bucket name
             client = storage.Client()
@@ -246,7 +252,7 @@ def compare_picture():
                     print(f'Augmented image distance for {user_name} ({augmented_blob.name}): {distance_augmented}')
 
                     # Update the best match if the current user is closer with the augmented image
-                    if distance_augmented < best_match_distance and distance_augmented < distance_limit:
+                    if distance_augmented < best_match_distance:
                         best_match_distance = distance_augmented
                         best_match = user_name
                         print('Best match in aug_data: ' + str(distance_augmented))
