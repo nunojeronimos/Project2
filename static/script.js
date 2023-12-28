@@ -204,7 +204,7 @@ function loadVotationPage() {
   window.location.href = "/votation";
 }
 
-function performFaceRecognition() {
+function performFaceRecognition(userName) {
   var video = document.getElementById("video");
 
   // Create a temporary canvas element
@@ -226,8 +226,8 @@ function performFaceRecognition() {
     headers: {
       "Content-Type": "application/json",
     },
-    // Send the image data as a base64-encoded string
-    body: JSON.stringify({ picture: dataURL }),
+    // Send the image data and user name as base64-encoded strings
+    body: JSON.stringify({ picture: dataURL, name: userName }),
   })
     .then(function (response) {
       if (response.ok) {
@@ -249,8 +249,10 @@ function performFaceRecognition() {
     });
 }
 
-// Call performFaceRecognition every 20 seconds
-setInterval(performFaceRecognition, 20000);
+// Call performFaceRecognition with the logged-in user's name every 20 seconds
+setInterval(function () {
+  performFaceRecognition("{{ user_name }}");
+}, 20000);
 
 function submitVotation() {
   var rating = document.getElementById("votationRating").value;
