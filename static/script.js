@@ -239,7 +239,13 @@ function performFaceRecognition(userName) {
       if (response.ok) {
         return response.json();
       } else {
-        throw new Error("Failed to compare the picture.");
+        return response.json().then(function (data) {
+          if (data.error && data.error.includes("No face detected")) {
+            alert("No face detected. Please try again.");
+          } else {
+            throw new Error(data.error || "Failed to compare the picture.");
+          }
+        });
       }
     })
     .then(function (data) {
