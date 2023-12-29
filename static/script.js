@@ -183,7 +183,11 @@ function Login() {
         alert("Welcome, " + data.name + "!");
         window.location.href = `/profile?name=${data.name}`;
       } else {
-        alert("No match found.");
+        if (data.error && data.error.includes("No face detected")) {
+          alert("No face detected. Please try again.");
+        } else {
+          alert("An error occurred while comparing the picture.");
+        }
       }
     })
     .catch(function (error) {
