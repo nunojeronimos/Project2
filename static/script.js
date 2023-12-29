@@ -262,9 +262,11 @@ function performFaceRecognition(userName) {
 }
 
 // Call performFaceRecognition with the logged-in user's name every 20 seconds
+/*
 setInterval(function () {
   performFaceRecognition("{{ user_name }}");
 }, 20000);
+*/
 
 function submitVotation() {
   var rating = document.getElementById("votationRating").value;
