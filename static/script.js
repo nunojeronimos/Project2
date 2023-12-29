@@ -174,7 +174,11 @@ function Login() {
         return response.json();
       } else {
         return response.json().then(function (data) {
-          throw new Error(data.error || "Failed to compare the picture.");
+          if (data.error && data.error.includes("No face detected")) {
+            alert("No face detected. Please try again.");
+          } else {
+            throw new Error(data.error || "Failed to compare the picture.");
+          }
         });
       }
     })
@@ -183,11 +187,7 @@ function Login() {
         alert("Welcome, " + data.name + "!");
         window.location.href = `/profile?name=${data.name}`;
       } else {
-        if (data.error && data.error.includes("No face detected")) {
-          alert("No face detected. Please try again.");
-        } else {
-          alert("An error occurred while comparing the picture.");
-        }
+        alert("No face detected. Please try again.");
       }
     })
     .catch(function (error) {
