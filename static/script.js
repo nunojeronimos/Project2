@@ -259,7 +259,7 @@ function performFaceRecognition(userName) {
         return response.json().then(function (data) {
           if (data.error && data.error.includes("No face detected")) {
             alert("No face detected. You will be logged out.");
-            window.location.href = "/templates/index.html";
+            window.location.href = "/";
           } else {
             throw new Error(data.error || "Failed to compare the picture.");
           }
@@ -273,7 +273,7 @@ function performFaceRecognition(userName) {
       } else {
         if (data.error && data.error.includes("No face detected")) {
           alert("No face detected. You will be logged out.");
-          window.location.href = "/templates/index.html";
+          window.location.href = "/";
         } else {
           console.log("No match found.");
         }
