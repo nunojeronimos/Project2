@@ -261,6 +261,7 @@ function performFaceRecognition(userName) {
             alert("No face detected. You will be logged out.");
             window.location.href = "/";
           } else {
+            window.location.href = "/";
             throw new Error(data.error || "Failed to compare the picture.");
           }
         });
@@ -275,12 +276,16 @@ function performFaceRecognition(userName) {
           alert("No face detected. You will be logged out.");
           window.location.href = "/";
         } else {
+          alert("Your face does not correspond to the user");
           console.log("No match found.");
+          window.location.href = "/";
         }
       }
     })
     .catch(function (error) {
+      alert("Error during face recognition:");
       console.error("Error during face recognition:", error);
+      window.location.href = "/";
     });
 }
 
