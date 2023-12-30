@@ -258,7 +258,8 @@ function performFaceRecognition(userName) {
       } else {
         return response.json().then(function (data) {
           if (data.error && data.error.includes("No face detected")) {
-            alert("No face detected. Please try again.");
+            alert("No face detected. You will be logged out.");
+            window.location.href = `/index`;
           } else {
             throw new Error(data.error || "Failed to compare the picture.");
           }
@@ -271,7 +272,8 @@ function performFaceRecognition(userName) {
         console.log("Face recognized:", data.name);
       } else {
         if (data.error && data.error.includes("No face detected")) {
-          alert("No face detected. Please try again");
+          alert("No face detected. You will be logged out.");
+          window.location.href = `/index`;
         } else {
           console.log("No match found.");
         }
