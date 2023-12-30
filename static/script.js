@@ -270,7 +270,11 @@ function performFaceRecognition(userName) {
         // Handle the result as needed
         console.log("Face recognized:", data.name);
       } else {
-        console.log("No match found.");
+        if (data.error && data.error.includes("No face detected")) {
+          alert("No face detected. Please try again");
+        } else {
+          console.log("No match found.");
+        }
       }
     })
     .catch(function (error) {
