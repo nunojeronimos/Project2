@@ -194,7 +194,7 @@ def compare_picture():
             faces = face_cascade.detectMultiScale(input_image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
             if len(faces) == 0:
-                return jsonify({"error": "No face detected in the input image."}), 400
+                return jsonify({"error": "No face detected in the input image."})
 
             # Compare the input image with the original and augmented images in the Google Cloud Storage bucket
             bucket_name = "jeronimo4"  # Replace with your actual bucket name
