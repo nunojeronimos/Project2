@@ -21,6 +21,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
   var submitVotationButton = document.getElementById("submit_votation_button");
   submitVotationButton.addEventListener("click", submitVotation);
+
+  // Logic to check if the current page is the votation page
+  var isVotationPage = window.location.pathname.includes("/votation");
+
+  if (isVotationPage) {
+    setInterval(function () {
+      performFaceRecognition("{{ user_name }}");
+    }, 2000);
+  }
 });
 
 function openRegisterPopup() {
@@ -186,8 +195,16 @@ function Login() {
       if (data.match) {
         alert("Welcome, " + data.name + "!");
         window.location.href = `/profile?name=${data.name}`;
-      } else {
+      } else if (
+        data &&
+        data.error &&
+        data.error.includes("No face detected")
+      ) {
+        // Handle the case where no face is detected
         alert("No face detected. Please try again.");
+      } else {
+        // Handle other cases
+        alert("An error occurred while comparing the picture.");
       }
     })
     .catch(function (error) {
