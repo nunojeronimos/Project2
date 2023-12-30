@@ -21,6 +21,21 @@
       </ul>
     </nav>
     <h1>Meetings Page</h1>
-    <!-- Add more content for the meetings page as needed -->
+    <video id="video" autoplay></video>
+    <button onclick="startMeeting()">Start Meeting</button>
+    <script>
+      const video = document.getElementById("video");
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices
+          .getUserMedia({ video: true })
+          .then(function (stream) {
+            video.srcObject = stream;
+          })
+          .catch(function (error) {
+            console.error("Error accessing the camera:", error);
+          });
+      }
+    </script>
+    <script src="{{ url_for('static', filename='script.js') }}?v=3.8"></script>
   </body>
 </html>

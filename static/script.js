@@ -322,3 +322,7 @@ function submitVotation() {
       console.error("Error:", error);
     });
 }
+
+function startMeeting() {
+  console.log("Meeting started");
+}
