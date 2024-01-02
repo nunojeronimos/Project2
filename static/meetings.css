@@ -1,9 +1,14 @@
+body {
+  display: flex;
+}
+
 #meetingParticipants {
   background-color: #f2f2f2;
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
+  flex: 1; /* This allows the div to grow and take up the available space */
 }
 
 #meetingParticipants h2 {
@@ -18,4 +23,8 @@
 #participantList li {
   margin-bottom: 10px;
   font-size: 16px;
+}
+
+#video {
+  flex: 1; /* This allows the video to grow and take up the available space */
 }
