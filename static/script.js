@@ -325,8 +325,24 @@ function submitVotation() {
 
 function startMeeting() {
   console.log("startMeeting");
+  const video = document.getElementById("video");
+  const participantList = document.getElementById("participantList");
+
   // Clear the participant list
   participantList.innerHTML = "";
+
+  // Set up the face recognition interval
+
+  // Capture the current video frame
+  const tempCanvas = document.createElement("canvas");
+  tempCanvas.width = video.videoWidth;
+  tempCanvas.height = video.videoHeight;
+  const context = tempCanvas.getContext("2d");
+  context.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+
+  // Convert the data URL to a base64-encoded string
+  const dataURL = tempCanvas.toDataURL("image/jpeg");
+
   // Perform face recognition for the current frame
   fetch("/compare_picture", {
     method: "POST",
