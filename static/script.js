@@ -324,5 +324,28 @@ function submitVotation() {
 }
 
 function startMeeting() {
-  console.log("Meeting started");
+  console.log("startMeeting");
+  // Clear the participant list
+  participantList.innerHTML = "";
+  // Perform face recognition for the current frame
+  fetch("/compare_picture", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    // Send the image data as a base64-encoded string
+    body: JSON.stringify({ picture: dataURL }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.match) {
+        // Add the recognized name to the participant list
+        const participantItem = document.createElement("li");
+        participantItem.textContent = data.name;
+        participantList.appendChild(participantItem);
+      }
+    })
+    .catch((error) => {
+      console.error("Error during face recognition:", error);
+    });
 }
