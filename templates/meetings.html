@@ -7,11 +7,6 @@
       type="text/css"
       href="{{ url_for('static', filename='navbar.css') }}"
     />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="{{ url_for('static', filename='meetings.css') }}"
-    />
     <title>Meetings</title>
   </head>
   <body>
@@ -28,7 +23,7 @@
     <h1>Meetings Page</h1>
     <video id="video" autoplay></video>
     <div id="meetingParticipants">
-      <h2>Meeting Participants:</h2>
+      <h2>Meeting Participants</h2>
       <ul id="participantList"></ul>
     </div>
     <p></p>
@@ -46,6 +41,6 @@
           });
       }
     </script>
-    <script src="{{ url_for('static', filename='script.js') }}?v=4.7"></script>
+    <script src="{{ url_for('static', filename='script.js') }}?v=5.0"></script>
   </body>
 </html>
