@@ -284,8 +284,8 @@ function performFaceRecognition(userName) {
     })
     .catch(function (error) {
       alert("Error during face recognition:");
-      console.error("Error during face recognition:", error);
       window.location.href = "/";
+      console.error("Error during face recognition:", error);
     });
 }
 
@@ -323,45 +323,61 @@ function submitVotation() {
     });
 }
 
+let participant = [];
+
 function startMeeting() {
   console.log("startMeeting");
   const video = document.getElementById("video");
   const participantList = document.getElementById("participantList");
 
-  // Clear the participant list
+  // Set up the face recognition interval
+  setInterval(() => {
+    // Capture the current video frame
+    const tempCanvas = document.createElement("canvas");
+    tempCanvas.width = video.videoWidth;
+    tempCanvas.height = video.videoHeight;
+    const context = tempCanvas.getContext("2d");
+    context.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+
+    // Convert the data URL to a base64-encoded string
+    const dataURL = tempCanvas.toDataURL("image/jpeg");
+
+    // Perform face recognition for the current frame
+    fetch("/compare_picture", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      // Send the image data as a base64-encoded string
+      body: JSON.stringify({ picture: dataURL }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.match) {
+          // Check if the participant is not already in the list
+          if (!participants.includes(data.name)) {
+            // Add the recognized name to the participant list
+            participants.push(data.name);
+
+            // Update the HTML list of participants
+            updateParticipantList(participantList);
+          }
+        }
+      })
+      .catch((error) => {
+        console.error("Error during face recognition:", error);
+      });
+  }, 20000); // Adjust the interval as needed
+}
+
+function updateParticipantList(participantList) {
+  // Clear the existing participant list
   participantList.innerHTML = "";
 
-  // Set up the face recognition interval
-
-  // Capture the current video frame
-  const tempCanvas = document.createElement("canvas");
-  tempCanvas.width = video.videoWidth;
-  tempCanvas.height = video.videoHeight;
-  const context = tempCanvas.getContext("2d");
-  context.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
-
-  // Convert the data URL to a base64-encoded string
-  const dataURL = tempCanvas.toDataURL("image/jpeg");
-
-  // Perform face recognition for the current frame
-  fetch("/compare_picture", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    // Send the image data as a base64-encoded string
-    body: JSON.stringify({ picture: dataURL }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.match) {
-        // Add the recognized name to the participant list
-        const participantItem = document.createElement("li");
-        participantItem.textContent = data.name;
-        participantList.appendChild(participantItem);
-      }
-    })
-    .catch((error) => {
-      console.error("Error during face recognition:", error);
-    });
+  // Add each participant to the HTML list
+  participants.forEach((participant) => {
+    const participantItem = document.createElement("li");
+    participantItem.textContent = participant;
+    participantList.appendChild(participantItem);
+  });
 }
