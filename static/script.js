@@ -324,6 +324,7 @@ function submitVotation() {
 }
 
 let participant = [];
+let participantTimes = {};
 
 function startMeeting() {
   console.log("startMeeting");
