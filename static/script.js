@@ -325,6 +325,7 @@ function submitVotation() {
 
 let participant = [];
 let participantTimes = {};
+let faceRecognitionInterval;
 
 function startMeeting() {
   console.log("startMeeting");
@@ -332,7 +333,7 @@ function startMeeting() {
   const participantList = document.getElementById("participantList");
 
   // Set up the face recognition interval
-  setInterval(() => {
+  faceRecognitionInterval = setInterval(() => {
     // Capture the current video frame
     const tempCanvas = document.createElement("canvas");
     tempCanvas.width = video.videoWidth;
@@ -374,7 +375,14 @@ function startMeeting() {
       .catch((error) => {
         console.error("Error during face recognition:", error);
       });
+    console.log("Performing face recognition every 20 seconds");
   }, 20000); // Adjust the interval as needed
+}
+
+function stopMeeting() {
+  console.log("stopMeeting");
+  // Clear the face recognition interval
+  clearInterval(faceRecognitionInterval);
 }
 
 function updateParticipantList(participantList) {
