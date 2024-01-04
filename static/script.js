@@ -359,6 +359,12 @@ function startMeeting() {
             // Add the recognized name to the participant list
             participant.push(data.name);
 
+            // Record the join time for the participant
+            participantTimes[data.name] = {
+              joinTime: new Date().toLocaleTimeString(),
+              leaveTime: null,
+            };
+
             // Update the HTML list of participants
             updateParticipantList(participantList);
           }
@@ -378,6 +384,29 @@ function updateParticipantList(participantList) {
   participant.forEach((participant) => {
     const participantItem = document.createElement("li");
     participantItem.textContent = participant;
+    participantList.appendChild(participantItem);
+  });
+}
+
+function leaveMeeting(participantName) {
+  // Record the leave time for the participant
+  participantTimes[participantName].leaveTime = new Date().toLocaleTimeString();
+
+  // Update the HTML list of participants
+  const participantList = document.getElementById("participantList");
+  updateParticipantList(participantList);
+}
+
+function updateParticipantList(participantList) {
+  // Clear the existing participant list
+  participantList.innerHTML = "";
+
+  // Add each participant to the HTML list with join and leave times
+  participant.forEach((participant) => {
+    const participantItem = document.createElement("li");
+    participantItem.textContent = `${participant} (Joined: ${
+      participantTimes[participant].joinTime
+    }, Left: ${participantTimes[participant].leaveTime || "Not left yet"})`;
     participantList.appendChild(participantItem);
   });
 }
