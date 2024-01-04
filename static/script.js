@@ -375,7 +375,7 @@ function updateParticipantList(participantList) {
   participantList.innerHTML = "";
 
   // Add each participant to the HTML list
-  participants.forEach((participant) => {
+  participant.forEach((participant) => {
     const participantItem = document.createElement("li");
     participantItem.textContent = participant;
     participantList.appendChild(participantItem);
