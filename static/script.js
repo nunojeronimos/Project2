@@ -355,9 +355,9 @@ function startMeeting() {
       .then((data) => {
         if (data.match) {
           // Check if the participant is not already in the list
-          if (!participants.includes(data.name)) {
+          if (!participant.includes(data.name)) {
             // Add the recognized name to the participant list
-            participants.push(data.name);
+            participant.push(data.name);
 
             // Update the HTML list of participants
             updateParticipantList(participantList);
