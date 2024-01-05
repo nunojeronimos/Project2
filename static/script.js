@@ -356,6 +356,7 @@ function startMeeting() {
       .then((response) => response.json())
       .then((data) => {
         if (data.match) {
+          console.log("Meeting:", data.name);
           // Check if the participant is not already in the list
           if (!participant.includes(data.name)) {
             // Add the recognized name to the participant list
