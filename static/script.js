@@ -372,14 +372,17 @@ function startMeeting() {
             updateParticipantList(participantList);
           }
         } else {
-          // Check if the participant was recognized in the previous interval
-          if (participant.includes(data.name)) {
-            // Update the leave time for the participant
-            participantTimes[data.name].leaveTime =
-              new Date().toLocaleTimeString();
+          // Check if the participant name is defined before proceeding
+          if (data.name) {
+            // Check if the participant was recognized in the previous interval
+            if (participant.includes(data.name)) {
+              // Update the leave time for the participant
+              participantTimes[data.name].leaveTime =
+                new Date().toLocaleTimeString();
 
-            // Update the HTML list of participants
-            updateParticipantList(participantList);
+              // Update the HTML list of participants
+              updateParticipantList(participantList);
+            }
           }
         }
       })
