@@ -370,6 +370,16 @@ function startMeeting() {
             // Update the HTML list of participants
             updateParticipantList(participantList);
           }
+        } else {
+          // Check if the participant was recognized in the previous interval
+          if (participant.includes(data.name)) {
+            // Update the leave time for the participant
+            participantTimes[data.name].leaveTime =
+              new Date().toLocaleTimeString();
+
+            // Update the HTML list of participants
+            updateParticipantList(participantList);
+          }
         }
       })
       .catch((error) => {
@@ -383,6 +393,19 @@ function stopMeeting() {
   console.log("stopMeeting");
   // Clear the face recognition interval
   clearInterval(faceRecognitionInterval);
+
+  // Update the leave time for participants who haven't left yet
+  participant.forEach((participantName) => {
+    if (!participantTimes[participantName].leaveTime) {
+      // Record the leave time for participants who haven't left yet
+      participantTimes[participantName].leaveTime =
+        new Date().toLocaleTimeString();
+    }
+  });
+
+  // Update the HTML list of participants
+  const participantList = document.getElementById("participantList");
+  updateParticipantList(participantList);
 }
 
 function updateParticipantList(participantList) {
