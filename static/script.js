@@ -373,13 +373,10 @@ function startMeeting() {
           }
         } else {
           console.log("No match was found");
-          // Check if the participant name is defined before proceeding
-          if (data.name) {
-            // Check if the participant was recognized in the previous interval
-            if (participant.includes(data.name)) {
-              // Update the leave time for the participant
-              leaveMeeting(data.name);
-            }
+          // Check if the participant was recognized in the previous interval
+          if (participant.includes(data.name)) {
+            // Update the leave time for the participant
+            leaveMeeting(data.name);
           }
         }
       })
