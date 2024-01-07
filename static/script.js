@@ -375,8 +375,10 @@ function startMeeting() {
           console.log("No match was found");
           // Check if the participant was recognized in the previous interval
           if (participant.includes(data.name)) {
-            // Update the leave time for the participant
-            leaveMeeting(data.name);
+            setTimeout(() => {
+              // Update the leave time for the participant
+              leaveMeeting(data.name);
+            }, 5000);
           }
         }
       })
