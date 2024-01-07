@@ -373,12 +373,13 @@ function startMeeting() {
           }
         } else {
           console.log("No match was found");
-          // Check if the participant was recognized in the previous interval
-          if (data.name && participant.includes(data.name)) {
-            setTimeout(() => {
+          // Check if the participant name is defined before proceeding
+          if (data.name) {
+            // Check if the participant was recognized in the previous interval
+            if (participant.includes(data.name)) {
               // Update the leave time for the participant
               leaveMeeting(data.name);
-            }, 5000);
+            }
           }
         }
       })
@@ -421,12 +422,17 @@ function updateParticipantList(participantList) {
 }
 
 function leaveMeeting(participantName) {
-  // Record the leave time for the participant
-  participantTimes[participantName].leaveTime = new Date().toLocaleTimeString();
+  // Check if the participant is in the list
+  if (participant.includes(participantName)) {
+    console.log(`Leaving meeting: ${participantName}`);
+    // Record the leave time for the participant
+    participantTimes[participantName].leaveTime =
+      new Date().toLocaleTimeString();
 
-  // Update the HTML list of participants
-  const participantList = document.getElementById("participantList");
-  updateParticipantList(participantList);
+    // Update the HTML list of participants
+    const participantList = document.getElementById("participantList");
+    updateParticipantList(participantList);
+  }
 }
 
 function updateParticipantList(participantList) {
