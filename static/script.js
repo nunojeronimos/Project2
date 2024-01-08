@@ -381,6 +381,14 @@ function startMeeting() {
                 new Date().toLocaleTimeString();
             }
           });
+
+          // Remove participants who have left from the array
+          participant = participant.filter(
+            (participantName) => !!participantTimes[participantName].leaveTime
+          );
+
+          // Update the HTML list of participants
+          updateParticipantList(participantList);
         }
       })
       .catch((error) => {
