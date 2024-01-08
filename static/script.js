@@ -373,14 +373,14 @@ function startMeeting() {
           }
         } else {
           console.log("No match was found");
-          // Check if the participant name is defined before proceeding
-          if (data.name) {
-            // Check if the participant was recognized in the previous interval
-            if (participant.includes(data.name)) {
-              // Update the leave time for the participant
-              leaveMeeting(data.name);
+          // Update the leave time for participants who haven't left yet
+          participant.forEach((participantName) => {
+            if (!participantTimes[participantName].leaveTime) {
+              // Record the leave time for participants who haven't left yet
+              participantTimes[participantName].leaveTime =
+                new Date().toLocaleTimeString();
             }
-          }
+          });
         }
       })
       .catch((error) => {
